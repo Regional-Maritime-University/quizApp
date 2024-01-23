@@ -1,0 +1,5 @@
+composer.lock
+db.sql
+
+assets/
+vendor/
