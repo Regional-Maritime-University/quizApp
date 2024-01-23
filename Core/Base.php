@@ -14,7 +14,7 @@ class Base
 
     public static function build_path($path)
     {
-        return BASE_PATH . $path;
+        return BASE_PATH . str_replace("/", DIRECTORY_SEPARATOR, $path);
     }
 
     public static function view($path, $attributes = [])
@@ -26,7 +26,6 @@ class Base
     public static function abort($status = 404)
     {
         http_response_code($status);
-        require self::build_path("views/{$status}.php");
-        die();
+        die("Page Not Found");
     }
 }

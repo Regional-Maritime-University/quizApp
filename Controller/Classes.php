@@ -28,7 +28,7 @@ class Classes
         return $added;
     }
 
-    public function edit($class): mixed
+    public function edit(array $class): mixed
     {
         $query = "UPDATE `class` SET `code` = :c, `fk_program` = :fkp WHERE `code` = :c";
         return $this->db->run($query, array(
@@ -37,12 +37,22 @@ class Classes
         ))->update();
     }
 
-    public function archive($classes): mixed
+    public function archive(array $classes): mixed
+    {
+        $archived = 0;
+        foreach ($classes as $class) {
+            $query = "UPDATE `class` SET `archived` = 1  WHERE `code` = :c";
+            $archived += $this->db->run($query, array(':c' => $class["code"]))->update();
+        }
+        return $archived;
+    }
+
+    public function remove(array $classes)
     {
         $removed = 0;
         foreach ($classes as $class) {
-            $query = "UPDATE `class` SET `archived` = 1  WHERE `code` = :c";
-            $removed += $this->db->run($query, array(':c' => $class["code"]))->update();
+            $query = "DELETE FROM class WHERE `code` = :c";
+            $removed += $this->db->run($query, array(":c" => $class["code"]))->delete();
         }
         return $removed;
     }

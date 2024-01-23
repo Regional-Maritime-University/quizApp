@@ -32,34 +32,45 @@ class Program
         return $added;
     }
 
-    public function editProgram($data): mixed
+    public function edit(array $program): mixed
     {
         $query = "UPDATE `program` SET `code` = :c, `name` = :n, `duration` = :d, `dur_format` = :f, `fk_department` = :fkd WHERE code = :c";
         return $this->db->run($query, array(
-            ':c' => $data["code"],
-            ':n' => $data["name"],
-            ':d' => $data["duration"],
-            ':f' => $data["dur_format"],
-            ':fkd' => $data["department"]
-        ));
+            ':c' => $program["code"],
+            ':n' => $program["name"],
+            ':d' => $program["duration"],
+            ':f' => $program["dur_format"],
+            ':fkd' => $program["department"]
+        ))->update();
     }
 
-    public function archiveProgram(array $programs): mixed
+    public function archive(array $programs): mixed
     {
         $removed = 0;
         foreach ($programs as $program) {
             $query = "UPDATE `program` SET `archived` = 1 WHERE `code` = :c";
-            $removed += $this->db->run($query, array(':c' => $program["code"]));
+            $removed += $this->db->run($query, array(':c' => $program["code"]))->update();
         }
         return $removed;
     }
+
+    public function remove(array $programs)
+    {
+        $removed = 0;
+        foreach ($programs as $course) {
+            $query = "DELETE FROM `program` WHERE `code` = :p";
+            $removed += $this->db->run($query, array(":p" => $course["code"]))->delete();
+        }
+        return $removed;
+    }
+
 
     public function fetchAllProgramByDepartment($departmentID, bool $isArchived = false): mixed
     {
         $query = "SELECT p.`code` AS programCode, p.`name` AS programName, p.`duration` AS programDuration, 
         p.`dur_format` AS durationFormat, d.`id` AS departmentID, d.`name` AS departmentName 
         FROM `program` AS p, `department` AS d WHERE p.`fk_department` = d.`id` AND d.`id` = :d AND p.`archived` = :a";
-        return $this->db->run($query, array(':d' => $departmentID, ":a" => $isArchived));
+        return $this->db->run($query, array(':d' => $departmentID, ":a" => $isArchived))->all();
     }
 
     public function fetchProgramByCode($programCode, bool $isArchived = false): mixed
@@ -67,7 +78,7 @@ class Program
         $query = "SELECT p.`code` AS programCode, p.`name` AS programName, p.`duration` AS programDuration, 
         p.`dur_format` AS durationFormat, d.`id` AS departmentID, d.`name` AS departmentName 
         FROM `program` AS p, `department` AS d WHERE p.`fk_department` = d.`id` AND p.`code` = :c AND p.`archived` = :a";
-        return $this->db->run($query, array(':c' => $programCode, ":a" => $isArchived));
+        return $this->db->run($query, array(':c' => $programCode, ":a" => $isArchived))->all();
     }
 
     public function fetchProgramByName($programName, bool $isArchived = false): mixed
@@ -75,6 +86,6 @@ class Program
         $query = "SELECT p.`code` AS programCode, p.`name` AS programName, p.`duration` AS programDuration, 
         p.`dur_format` AS durationFormat, d.`id` AS departmentID, d.`name` AS departmentName 
         FROM `program` AS p, `department` AS d WHERE p.`fk_department` = d.`id` AND p.`name` = :n AND p.`archived` = :a";
-        return $this->db->run($query, array(':n' => $programName, ":a" => $isArchived));
+        return $this->db->run($query, array(':n' => $programName, ":a" => $isArchived))->all();
     }
 }

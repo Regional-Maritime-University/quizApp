@@ -31,30 +31,37 @@ class Courses
         return $added;
     }
 
-    public function update($data)
+    public function edit(array $course)
     {
         $query = "UPDATE courses SET `code` = :c, `name` = :n , `credit_hours` = :h, `fk_department` = :fkd";
         $params = array(
-            ":c" => $data["code"],
-            ":n" => $data["name"],
-            ":h" => $data["credit-hours"],
-            ":fkd" => $data["department"],
+            ":c" => $course["code"],
+            ":n" => $course["name"],
+            ":h" => $course["credit-hours"],
+            ":fkd" => $course["department"],
         );
         return $this->db->run($query, $params)->update();
     }
 
-    public function archive($data)
+    public function archive(array $courses)
     {
-        $query = "UPDATE courses SET `archive` = 1 WHERE `code` = :c";
-        $params = array(":c" => $data["code"]);
-        return $this->db->run($query, $params)->update();
+        $archived = 0;
+        foreach ($courses as $course) {
+            $query = "UPDATE courses SET `archive` = 1 WHERE `code` = :c";
+            $params = array(":c" => $course["code"]);
+            $archived += $this->db->run($query, $params)->update();
+        }
+        return $archived;
     }
 
-    public function delete($data)
+    public function remove(array $courses)
     {
-        $query = "DELETE FROM courses WHERE `code` = :c";
-        $params = array(":c" => $data["code"]);
-        return $this->db->run($query, $params)->delete();
+        $removed = 0;
+        foreach ($courses as $course) {
+            $query = "DELETE FROM courses WHERE `code` = :c";
+            $removed += $this->db->run($query, array(":c" => $course["code"]))->delete();
+        }
+        return $removed;
     }
 
     public function fetchByDepartment($departmentID, bool $isArchived = false): mixed
