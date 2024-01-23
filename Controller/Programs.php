@@ -65,7 +65,7 @@ class Program
     }
 
 
-    public function fetchAllProgramByDepartment($departmentID, bool $isArchived = false): mixed
+    public function fetchByDepartment($departmentID, bool $isArchived = false): mixed
     {
         $query = "SELECT p.`code` AS programCode, p.`name` AS programName, p.`duration` AS programDuration, 
         p.`dur_format` AS durationFormat, d.`id` AS departmentID, d.`name` AS departmentName 
@@ -73,7 +73,7 @@ class Program
         return $this->db->run($query, array(':d' => $departmentID, ":a" => $isArchived))->all();
     }
 
-    public function fetchProgramByCode($programCode, bool $isArchived = false): mixed
+    public function fetchByCode($programCode, bool $isArchived = false): mixed
     {
         $query = "SELECT p.`code` AS programCode, p.`name` AS programName, p.`duration` AS programDuration, 
         p.`dur_format` AS durationFormat, d.`id` AS departmentID, d.`name` AS departmentName 
@@ -81,7 +81,7 @@ class Program
         return $this->db->run($query, array(':c' => $programCode, ":a" => $isArchived))->all();
     }
 
-    public function fetchProgramByName($programName, bool $isArchived = false): mixed
+    public function fetchByName($programName, bool $isArchived = false): mixed
     {
         $query = "SELECT p.`code` AS programCode, p.`name` AS programName, p.`duration` AS programDuration, 
         p.`dur_format` AS durationFormat, d.`id` AS departmentID, d.`name` AS departmentName 

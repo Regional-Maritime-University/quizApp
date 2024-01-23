@@ -11,6 +11,7 @@ require "../bootstrap.php";
 use Core\Base;
 use Core\Validator;
 use Controller\Courses;
+use Controller\Lecturers;
 use Controller\Staff;
 
 
@@ -31,8 +32,50 @@ if ($resourceRequested !== 2) Base::abort();
 $module = $separatePath[0];
 $action = $separatePath[1];
 
+$config = require Base::build_path("config/database.php");
+
 // Handles all GET requests
 if ($_SERVER['REQUEST_METHOD'] === "GET") {
+
+    switch ($module) {
+
+        case 'lecturer':
+
+            switch ($action) {
+                case 'fetch':
+                    $staff = new Lecturers($config["database"]["mysql"]);
+                    $result = $staff->fetchByStaffNumber($_GET["staff"]);
+
+                    if (!$result) die(json_encode(array("success" => false, "message" => "Staff details not found!")));
+                    die(json_encode(array("success" => true, "message" => $result)));
+                    break;
+
+                default:
+                    # code...
+                    break;
+            }
+
+            break;
+
+        case 'lecturer':
+
+            break;
+
+        case 'program':
+
+            break;
+
+        case 'course':
+            $course = new Courses($config["database"]["mysql"]);
+            $result = $course->fetchByDepartment(1);
+            if (!empty($result)) die(array("success" => true, "data" => json_encode($result)));
+            die(array("success" => false, "data" => "No result found!"));
+            break;
+
+        case 'class':
+
+            break;
+    }
 
     //Staff
     if (!isset($_GET["staffID"]) || empty($_GET["staffID"]))
@@ -41,8 +84,6 @@ if ($_SERVER['REQUEST_METHOD'] === "GET") {
 
 // Handles all POST requests
 else if ($_SERVER['REQUEST_METHOD'] === "POST") {
-
-    $config = require Base::build_path("config/database.php");
 
     switch ($module) {
 
