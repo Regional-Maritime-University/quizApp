@@ -6,7 +6,7 @@
         <li class="nav-item">
             <a class="nav-link " href="index.html">
                 <i class="bi bi-grid"></i>
-                <span>Dashboard</span>
+                <span><?= $pageTitle ?></span>
             </a>
         </li><!-- End Dashboard Nav -->
 
@@ -17,12 +17,12 @@
                 </a>
                 <ul id="assign-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
                     <li>
-                        <a href="assign/courses.php">
+                        <a href="assign-course.php">
                             <i class="bi bi-circle"></i><span>Course</span>
                         </a>
                     </li>
                     <li>
-                        <a href="assign/classes.php">
+                        <a href="assign-class.php">
                             <i class="bi bi-circle"></i><span>Class</span>
                         </a>
                     </li>

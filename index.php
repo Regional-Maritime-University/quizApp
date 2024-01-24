@@ -4,13 +4,13 @@ require("bootstrap.php");
 
 use Core\Base;
 
-$pageTitle = "try";
+$pageTitle = "Login";
 ?>
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-    <?php require Base::build_path("partials/head.php") ?>
+    <?php require_once Base::build_path("partials/head.php") ?>
 </head>
 
 <body>
@@ -45,19 +45,19 @@ $pageTitle = "try";
                                             <label for="yourEmail" class="form-label">Email</label>
                                             <div class="input-group has-validation">
                                                 <span class="input-group-text" id="inputGroupPrepend">@</span>
-                                                <input type="email" name="email" class="form-control" id="yourEmail" required>
+                                                <input type="email" name="email" class="form-control form-control-lg" id="yourEmail">
                                                 <div class="invalid-feedback">Please a correct email address.</div>
                                             </div>
                                         </div>
 
                                         <div class="col-12">
                                             <label for="yourPassword" class="form-label">Password</label>
-                                            <input type="password" name="password" class="form-control" id="yourPassword" required>
+                                            <input type="password" name="password" class="form-control form-control-lg" id="yourPassword" required>
                                             <div class="invalid-feedback">Please enter your password!</div>
                                         </div>
 
                                         <div class="col-12">
-                                            <button class="btn btn-primary w-100" type="submit">Login</button>
+                                            <button class="btn btn-primary w-100 btn-lg" type="submit">Login</button>
                                         </div>
                                     </form>
 

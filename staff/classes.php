@@ -5,7 +5,7 @@ require("../bootstrap.php");
 
 use Core\Base;
 
-$pageTitle = "try";
+$pageTitle = "Classes";
 ?>
 
 <!DOCTYPE html>

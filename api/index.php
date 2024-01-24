@@ -27,120 +27,106 @@ $urlPath = str_replace("/quizApp/api/", "", $urlParse);
 $separatePath = explode("/", $urlPath);
 $resourceRequested = count($separatePath);
 
-if ($resourceRequested !== 2) Base::abort();
-
 $module = $separatePath[0];
-$action = $separatePath[1];
 
 $config = require Base::build_path("config/database.php");
 
 // Handles all GET requests
-if ($_SERVER['REQUEST_METHOD'] === "GET") {
+if ($_SERVER['REQUEST_METHOD'] === "GET") :
 
-    switch ($module) {
+    if ($module === "lecturer") :
+        $staff = new Lecturers($config["database"]["mysql"]);
 
-        case 'lecturer':
+        switch (key($_GET)):
+            case 'department':
+                $result = $staff->fetchByDepartment($_GET["department"]);
+                $feed = Validator::SendResult($result, $result, "Staff details not found!");
+                die(json_encode($feed));
 
-            switch ($action) {
-                case 'fetch':
-                    $staff = new Lecturers($config["database"]["mysql"]);
-                    $result = $staff->fetchByStaffNumber($_GET["staff"]);
+            case 'staff':
+                $result = $staff->fetchByStaffNumber($_GET["staff"]);
+                $feed = Validator::SendResult($result, $result, "Staff details not found!");
+                die(json_encode($feed));
 
-                    if (!$result) die(json_encode(array("success" => false, "message" => "Staff details not found!")));
-                    die(json_encode(array("success" => true, "message" => $result)));
-                    break;
+            default:
+        endswitch;
 
-                default:
-                    # code...
-                    break;
-            }
+    elseif ($module ===  'lecturer') :
 
-            break;
+    elseif ($module ===  'lecturer') :
 
-        case 'lecturer':
+    elseif ($module ===  'program') :
 
-            break;
+    elseif ($module ===  'course') :
+        $course = new Courses($config["database"]["mysql"]);
+        $result = $course->fetchByDepartment(1);
+        if (!empty($result)) die(array("success" => true, "data" => json_encode($result)));
+        die(array("success" => false, "data" => "No result found!"));
 
-        case 'program':
+    elseif ($module ===  'class') :
 
-            break;
-
-        case 'course':
-            $course = new Courses($config["database"]["mysql"]);
-            $result = $course->fetchByDepartment(1);
-            if (!empty($result)) die(array("success" => true, "data" => json_encode($result)));
-            die(array("success" => false, "data" => "No result found!"));
-            break;
-
-        case 'class':
-
-            break;
-    }
-
-    //Staff
-    if (!isset($_GET["staffID"]) || empty($_GET["staffID"]))
-        die(json_encode(array("success" => false, "message" => "Invalid request!")));
-}
+    endif;
 
 // Handles all POST requests
-else if ($_SERVER['REQUEST_METHOD'] === "POST") {
+elseif ($_SERVER['REQUEST_METHOD'] === "POST") :
+    $action = $separatePath[1];
 
-    switch ($module) {
+    if ($module === 'staff') :
+        $staff = new Staff($config["database"]["mysql"]);
 
-        case 'staff':
+        switch ($action):
 
-            switch ($action) {
-                case 'login':
-                    $staff = new Staff($config["database"]["mysql"]);
-                    $result = $staff->login($_POST["email"], $_POST["password"]);
+            case 'login':
+                $result = $staff->login($_POST["email"], $_POST["password"]);
+                $feed = Validator::SendResult($result, "Login successful!", "Account not found!");
 
-                    if (!$result) die(json_encode(array("success" => false, "message" => "Account not found!")));
-
+                if ($feed["success"]) :
                     $_SESSION["isLoggedIn"] = true;
                     unset($result["password"]);
                     $_SESSION["user"] = $result;
+                endif;
 
-                    die(json_encode(array("success" => true, "message" => "Login successful!", "data" => $result["role"])));
-                    break;
+                die(json_encode($feed));
 
-                default:
-                    # code...
-                    break;
-            }
+            case 'assign':
+                $result = $staff->assignCourse($_POST);
+                $feed = Validator::SendResult($result, $result, "Account not found!");
+                die(json_encode($feed));
 
-            break;
+            default:
+                # code...
+                break;
+        endswitch;
 
-        case 'lecturer':
 
-            break;
+    elseif ($module === 'lecturer') :
 
-        case 'program':
 
-            break;
+    elseif ($module === 'program') :
 
-        case 'course':
-            $course = new Courses($config["database"]["mysql"]);
-            $result = $course->fetchByDepartment(1);
-            if (!empty($result)) die(array("success" => true, "data" => json_encode($result)));
-            die(array("success" => false, "data" => "No result found!"));
-            break;
 
-        case 'class':
+    elseif ($module === 'course') :
+        $course = new Courses($config["database"]["mysql"]);
+        $result = $course->fetchByDepartment(1);
+        if (!empty($result)) die(array("success" => true, "data" => json_encode($result)));
+        die(array("success" => false, "data" => "No result found!"));
 
-            break;
-    }
-}
+    elseif ($module === 'class') :
+
+    endif;
+
+endif;
 
 // student login
-if ($_GET["url"] == "studentLogin") {
+/*if ($_GET["url"] == "studentLogin") {
     if (!isset($_SESSION["_start"]) || !isset($_POST["_logToken"]) || empty($_SESSION["_start"]) || empty($_POST["_logToken"]))
         die(json_encode(array("success" => false, "message" => "Missing required parameters!")));
     if ($_POST["_logToken"] !== $_SESSION["_start"]) die(json_encode(array("success" => false, "message" => "Invalid request!")));
     if (!isset($_POST["index_number"])) die(json_encode(array("success" => false, "message" => "Missing input: Index number is required!")));
     if (!isset($_POST["password"])) die(json_encode(array("success" => false, "message" => "Missing input: Password is required!")));
 
-    $index_number = Validator::validateIndexNumber($_POST["index_number"]);
-    $password = Validator::validatePassword($_POST["password"]);
+    $index_number = Validator::IndexNumber($_POST["index_number"]);
+    $password = Validator::Password($_POST["password"]);
     $result = $user->loginStudent($index_number, $password);
 
     if (!$result) {
@@ -156,4 +142,4 @@ if ($_GET["url"] == "studentLogin") {
 
 // Register courses
 else if ($_GET["url"] == "registerCourses") {
-}
+}*/
