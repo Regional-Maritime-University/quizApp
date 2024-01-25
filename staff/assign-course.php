@@ -3,6 +3,7 @@ session_start();
 
 require("../bootstrap.php");
 
+use Controller\Courses;
 use Core\Base;
 
 $pageTitle = "Assign Courses";
@@ -44,7 +45,7 @@ $pageTitle = "Assign Courses";
                                             <select id="assign-course-option" class="form-select">
                                                 <option hidden>Choose...</option>
                                                 <option value="lecturer">Lecturer</option>
-                                                <option value="student">Student</option>
+                                                <option value="class">Class</option>
                                             </select>
                                         </div>
 
@@ -79,39 +80,29 @@ $pageTitle = "Assign Courses";
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr>
-                                                <th scope="row">1</th>
-                                                <td>C0001</td>
-                                                <td>Ghana Must Go</td>
-                                                <td>28</td>
-                                                <td>
-                                                    <div class="form-check">
-                                                        <input type="checkbox" class="form-check-input course" value="1">
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row">1</th>
-                                                <td>C0002</td>
-                                                <td>Ghana Must Go</td>
-                                                <td>28</td>
-                                                <td>
-                                                    <div class="form-check">
-                                                        <input type="checkbox" class="form-check-input course" value="2">
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row">1</th>
-                                                <td>C0003</td>
-                                                <td>Ghana Must Go</td>
-                                                <td>28</td>
-                                                <td>
-                                                    <div class="form-check">
-                                                        <input type="checkbox" class="form-check-input course" value="3">
-                                                    </div>
-                                                </td>
-                                            </tr>
+                                            <?php
+                                            $config = require Base::build_path("config/database.php");
+                                            $courseObj = new Courses($config["database"]["mysql"]);
+                                            $courses = $courseObj->fetchByDepartment($_SESSION["user"]["fk_department"]);
+
+                                            $counter = 1;
+                                            foreach ($courses as $course) :
+                                            ?>
+                                                <tr>
+                                                    <th scope="row"><?= $counter ?></th>
+                                                    <td><?= $course["courseCode"] ?></td>
+                                                    <td><?= $course["courseName"] ?></td>
+                                                    <td><?= $course["creditHours"] ?></td>
+                                                    <td>
+                                                        <div class="form-check">
+                                                            <input type="checkbox" class="form-check-input course" value="<?= $course["courseCode"] ?>">
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            <?php
+                                                $counter++;
+                                            endforeach
+                                            ?>
                                         </tbody>
                                     </table>
                                     <!-- End Bordered Table -->
@@ -147,24 +138,38 @@ $pageTitle = "Assign Courses";
                 else return str;
             }
 
+            let assignTo;
+
             $("#assign-course-option").change("blur", function() {
                 $("#who-label").text(capitalizeFirstCharacter(this.value));
                 $("#assign-to").val(this.value);
+                assignTo = this.value;
 
                 $.ajax({
                     type: "GET",
                     url: "../api/" + this.value + "?department=" + $("#assign-depart").val(),
                 }).done(function(data) {
+                    console.log(assignTo);
                     console.log(data);
                     $("#assign-course-who").html('<option hidden>Choose...</option>');
+                    if (assignTo === "class") {
+                        $.each(data.message, function(index, value) {
+                            $("#assign-course-who").append(
+                                '<option value="' + value['classCode'] + '">' +
+                                (value['classCode']).trim() +
+                                '</option>'
+                            );
+                        });
+                    } else if (assignTo === "lecturer") {
+                        $.each(data.message, function(index, value) {
+                            $("#assign-course-who").append(
+                                '<option value="' + value['number'] + '">' +
+                                (value['prefix'] + " " + value['first_name'] + " " + value['last_name']).trim() +
+                                '</option>'
+                            );
+                        });
+                    }
 
-                    $.each(data.message, function(index, value) {
-                        $("#assign-course-who").append(
-                            '<option value="' + value['number'] + '">' +
-                            (value['prefix'] + " " + value['first_name'] + " " + value['last_name']).trim() +
-                            '</option>'
-                        );
-                    });
                 }).fail(function(err) {
                     console.log(err);
                 });
@@ -194,6 +199,8 @@ $pageTitle = "Assign Courses";
                     cache: false,
                 }).done(function(data) {
                     console.log(data);
+                    alert(data.message);
+                    window.location.reload();
                 }).fail(function(err) {
                     console.log(err);
                 });

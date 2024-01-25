@@ -6,6 +6,8 @@ require("../bootstrap.php");
 use Core\Base;
 use Controller\Lecturers;
 
+$config = require Base::build_path("config/database.php");
+
 $pageTitle = "Lecturers";
 ?>
 
@@ -50,24 +52,25 @@ $pageTitle = "Lecturers";
                                                 <th scope="col">#</th>
                                                 <th scope="col">Name</th>
                                                 <th scope="col">Role</th>
-                                                <th scope="col">Sex</th>
+                                                <th scope="col">Gender</th>
                                                 <th scope="col"></th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <?php
-                                            $config = require Base::build_path("config/database.php");
                                             $lecturers = new Lecturers($config["database"]["mysql"]);
                                             $all_lecturers = $lecturers->fetchByDepartment($_SESSION["user"]["fk_department"]);
 
-                                            foreach ($all_lecturers as $lecturer) {
+                                            $counter = 1;
+                                            foreach ($all_lecturers as $lecturer) :
                                             ?>
                                                 <tr>
-                                                    <th scope="row">1</th>
+                                                    <th scope="row"><?= $counter ?></th>
                                                     <td><?= trim($lecturer["prefix"] . " " . $lecturer["first_name"] . " " . $lecturer["middle_name"] . " " . $lecturer["last_name"]) ?></td>
                                                     <td><?= $lecturer["role"] ?></td>
                                                     <td><?= $lecturer["gender"] ?></td>
                                                     <td style="display: flex;">
+                                                        <a type="button" class="btn btn-info btn-sm me-2" href="?number=<?= $lecturer["number"] ?>" data-lecturer="<?= $lecturer["number"] ?>">View</a>
                                                         <button type="button" class="btn btn-primary btn-sm me-2 editLecturerData" data-lecturer="<?= $lecturer["number"] ?>" data-bs-toggle="modal" data-bs-target="#editLecturer">Edit</button>
                                                         <form action="" method="post">
                                                             <input type="hidden" name="staff" value="<?= $lecturer["number"] ?>">
@@ -76,7 +79,8 @@ $pageTitle = "Lecturers";
                                                     </td>
                                                 </tr>
                                             <?php
-                                            }
+                                                $counter++;
+                                            endforeach
                                             ?>
                                         </tbody>
                                     </table>
@@ -159,69 +163,90 @@ $pageTitle = "Lecturers";
             </div>
         </div><!-- End Full Screen Modal-->
 
-        <!-- Edit Lectuer modal -->
-        <div class="modal fade" id="editLecturer" tabindex="-1">
-            <div class="modal-dialog modal-fullscreen">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Edit Lecturer</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
+        <?php
+        if (isset($_GET["number"]) && !empty($_GET["number"])) :
 
-                        <div style="display: flex; width:800px">
-                            <!-- Multi Columns Form -->
-                            <form class="row g-3">
-                                <div class="col-md-2">
-                                    <label for="add-lec-prefix" class="form-label">Prefix</label>
-                                    <select id="add-lec-prefix" class="form-select">
-                                        <option hidden>Choose...</option>
-                                        <option>Mr</option>
-                                        <option>Mrs</option>
-                                        <option>Miss</option>
-                                    </select>
+            $lecturers = new Lecturers($config["database"]["mysql"]);
+            $all_lecturers = $lecturers->fetchByDepartment($_SESSION["user"]["fk_department"]);
+
+            $counter = 1;
+            foreach ($all_lecturers as $lecturer) :
+
+        ?>
+                <!-- Edit Lectuer modal -->
+                <div class="modal fade" id="editLecturer" tabindex="-1">
+                    <div class="modal-dialog modal-fullscreen">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Edit Lecturer</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body" style="display: grid; place-items: center; height: 100vh; margin: 0;">
+
+                                <div style="display: flex; width:600px">
+                                    <!-- Multi Columns Form -->
+                                    <form class="row g-3">
+                                        <div class="col-md-4">
+                                            <label for="edit-lec-prefix" class="form-label">Prefix</label>
+                                            <select id="edit-lec-prefix" class="form-select">
+                                                <option hidden>Choose...</option>
+                                                <option value="Mr" <?= $lecturer["prefix"] === "Mr" ? "selected" : "" ?>>Mr</option>
+                                                <option value="Mrs" <?= $lecturer["prefix"] === "Mrs" ? "selected" : ""  ?>>Mrs</option>
+                                                <option value="Miss" <?= $lecturer["prefix"] === "Miss" ? "selected" : ""  ?>>Miss</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <label for="edit-lec-fname" class="form-label">First Name</label>
+                                            <input type="email" class="form-control" id="edit-lec-fname" name="edit-lec-fname" value="<?= $lecturer['first_name'] ?>">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="edit-lec-mname" class="form-label">Middle Name</label>
+                                            <input type="password" class="form-control" id="edit-lec-mname" name="edit-lec-mname" value="<?= $lecturer['middle_name'] ?>">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="edit-lec-lname" class="form-label">Last Name</label>
+                                            <input type="email" class="form-control" id="edit-lec-lname" name="edit-lec-lname" value="<?= $lecturer['last_name'] ?>">
+                                        </div>
+                                        <div class="col-md-8">
+                                            <label for="edit-lec-email" class="form-label">Email</label>
+                                            <input type="email" class="form-control" id="edit-lec-email" name="edit-lec-email" value="<?= $lecturer['email'] ?>">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="edit-lec-role" class="form-label">Role</label>
+                                            <select id="edit-lec-role" class="form-select">
+                                                <option hidden>Choose...</option>
+                                                <option value="lecturer" <?= $lecturer["role"] === "lecturer" ? "selected" : "" ?>>LECTURER</option>
+                                                <option value="hod" <?= $lecturer["role"] === "hod" ? "selected" : ""  ?>>HOD</option>
+                                                <option value="secretary" <?= $lecturer["role"] === "secretary" ? "selected" : ""  ?>>SECRETARY</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="row">
+                                                <label for="gender" class="form-label">Gender</label>
+                                                <div class="form-check">
+                                                    <input type="radio" name="edit-lec-gender" id="maleGender" class="form-check-input" value="M" <?= $lecturer['gender'] === 'M' ? 'checked' : '' ?>>
+                                                    <label for="maleGender" class="form-check-label">M</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input type="radio" name="edit-lec-gender" id="femaleGender" class="form-check-input" value="F" <?= $lecturer['gender'] === 'F' ? 'checked' : '' ?>>
+                                                    <label for="femaleGender" class="form-check-label">F</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form><!-- End Multi Columns Form -->
                                 </div>
-                                <div class="col-md-4">
-                                    <label for="add-lec-fname" class="form-label">First Name</label>
-                                    <input type="email" class="form-control" id="add-lec-fname" name="add-lec-fname">
-                                </div>
-                                <div class="col-md-3">
-                                    <label for="add-lec-mname" class="form-label">Middle Name</label>
-                                    <input type="password" class="form-control" id="add-lec-mname" name="add-lec-mname">
-                                </div>
-                                <div class="col-md-3">
-                                    <label for="add-lec-lname" class="form-label">Last Name</label>
-                                    <input type="email" class="form-control" id="add-lec-lname" name="add-lec-lname">
-                                </div>
-                                <div class="col-md-8">
-                                    <label for="add-lec-email" class="form-label">Email</label>
-                                    <input type="password" class="form-control" id="add-lec-email" name="add-lec-email">
-                                </div>
-                                <div class="col-md-4">
-                                    <label for="add-lec-role" class="form-label">Role</label>
-                                    <select id="add-lec-role" class="form-select">
-                                        <option hidden>Choose...</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-4">
-                                    <label for="gender" class="form-label">Gender</label>
-                                    <input type="radio" name="gender" id="gender" value="M"> M
-                                    <input type="radio" name="gender" id="gender" value="F"> F
-                                </div>
-                                <div class="text-center">
-                                    <button type="submit" id="add-lecturer" class="btn btn-primary">Submit</button>
-                                    <button type="reset" class="btn btn-secondary">Reset</button>
-                                </div>
-                            </form><!-- End Multi Columns Form -->
+                            </div>
+                            <div class="modal-footer">
+                                <label class="btn btn-secondary" data-bs-dismiss="modal">Close</label>
+                                <label class="btn btn-primary" for="edit-lecturer">Save changes</label>
+                            </div>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <label class="btn btn-secondary" data-bs-dismiss="modal">Close</label>
-                        <label class="btn btn-primary" for="add-lecturer">Save changes</label>
-                    </div>
-                </div>
-            </div>
-        </div><!-- End Full Screen Modal-->
+                </div><!-- End Full Screen Modal-->
+        <?php
+            endforeach;
+        endif;
+        ?>
 
     </main><!-- End #main -->
 

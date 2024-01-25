@@ -40,7 +40,7 @@ class Staff
         $who = $data["assign-who"];
 
         if ($to === "lecturer") return $this->assignCourseToLecturer($courses, $who);
-        elseif ($to === "student") return $this->assignCourseToClass($courses, $who);
+        elseif ($to === "class") return $this->assignCourseToClass($courses, $who);
     }
 
     public function assignCourseToLecturer(array $courses, string $lecturer)
@@ -54,21 +54,21 @@ class Staff
                 ':m' => $this->currentSemester()
             ))->add();
         }
-        return "{$added} courses assign to the lecturer [ID: {$lecturer}]!";
+        return "{$added} courses assign to this lecturer [ID: {$lecturer}]!";
     }
 
     public function assignCourseToClass(array $courses, string $class)
     {
         $added = 0;
         foreach ($courses as $course) {
-            $query = "INSERT INTO `lecture` (`fk_class`, `fk_course`, `fk_semester`) VALUES (:s, :c, :m)";
+            $query = "INSERT INTO `section` (`fk_class`, `fk_course`, `fk_semester`) VALUES (:s, :c, :m)";
             $added += $this->db->run($query, array(
                 ':s' => $class,
-                ':c' => $course["course"],
+                ':c' => $course,
                 ':m' => 1 //$this->currentSemester()
             ))->add();
         }
-        return "{$added} courses assign to the class [Code: {$class}]!";
+        return "{$added} courses assign to this class [Code: {$class}]!";
     }
 
     public function classToStudent(array $students, string $class)
@@ -81,6 +81,6 @@ class Staff
                 ':i' => 1 //$student["index-number"]
             ))->add();
         }
-        return "{$added} students assign to the class [Code: {$class}]!";
+        return "{$added} students assign to this class [Code: {$class}]!";
     }
 }

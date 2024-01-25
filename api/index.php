@@ -8,6 +8,7 @@ session_start();
 
 require "../bootstrap.php";
 
+use Controller\Classes;
 use Core\Base;
 use Core\Validator;
 use Controller\Courses;
@@ -51,7 +52,27 @@ if ($_SERVER['REQUEST_METHOD'] === "GET") :
             default:
         endswitch;
 
-    elseif ($module ===  'lecturer') :
+    elseif ($module ===  'class') :
+        $classObj = new Classes($config["database"]["mysql"]);
+
+        switch (key($_GET)):
+            case 'department':
+                $result = $classObj->fetchByDepartment($_GET["department"]);
+                $feed = Validator::SendResult($result, $result, "Staff details not found!");
+                die(json_encode($feed));
+
+            case 'program':
+                $result = $classObj->fetchByProgram($_GET["program"]);
+                $feed = Validator::SendResult($result, $result, "Staff details not found!");
+                die(json_encode($feed));
+
+            case 'code':
+                $result = $classObj->fetchByCode($_GET["code"]);
+                $feed = Validator::SendResult($result, $result, "Staff details not found!");
+                die(json_encode($feed));
+
+            default:
+        endswitch;
 
     elseif ($module ===  'lecturer') :
 
