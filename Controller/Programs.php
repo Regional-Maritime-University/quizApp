@@ -4,7 +4,7 @@ namespace Controller;
 
 use Core\Database;
 
-class Program
+class Programs
 {
 
     private $db;

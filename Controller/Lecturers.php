@@ -15,59 +15,68 @@ class Lecturers
     }
 
     //CRUD For Program
-    public function add(array $lecturers): mixed
+    public function add(array $data)
     {
-        $added = 0;
-        foreach ($lecturers as $lecturer) {
-            $query = "INSERT INTO `program` (`code`, `name`, `duration`, `dur_format`, `fk_department`) VALUES (:c, :n, :d, :f, :fkd)";
-            $params = array(
-                ':c' => $lecturer["code"],
-                ':n' => $lecturer["name"],
-                ':d' => $lecturer["duration"],
-                ':f' => $lecturer["dur_format"],
-                ':n' => $lecturer["department"]
-            );
-            $added += $this->db->run($query, $params)->add();
-        }
-        return $added;
-    }
+        $exists = $this->fetchByStaffNumber($data["add-lec-number"]);
+        if (!empty($exists)) return array("success" => false, "message" => "Staff number exist!");
 
+        $query = "INSERT INTO `staff`(`number`, `email`, `password`, `first_name`, `middle_name`, `last_name`, `prefix`, `gender`, `role`, `fk_department`) 
+                VALUES (:num, :em, :ps, :fn, :mn, :ln, :pr, :gn, :rl, :fkd)";
+        $added = $this->db->run($query, array(
+            ':num' => $data["add-lec-number"],
+            ':em' => $data["add-lec-email"],
+            ':ps' => password_hash("123@password", PASSWORD_BCRYPT),
+            ':fn' => $data["add-lec-fname"],
+            ':mn' => $data["add-lec-mname"],
+            ':ln' => $data["add-lec-lname"],
+            ':pr' => $data["add-lec-prefix"],
+            ':gn' => $data["add-lec-gender"],
+            ':rl' => $data["add-lec-role"],
+            ':fkd' => $data["add-lec-depart"]
+        ))->add();
+        return $added ? array("success" => true, "message" => "New staff added!") : array("success" => false, "message" => "Failed to add statff!");
+    }
     public function edit(array $lecturer): mixed
     {
-        $query = "UPDATE `program` SET `code` = :c, `name` = :n, `duration` = :d, `dur_format` = :f, `fk_department` = :fkd WHERE code = :c";
-        return $this->db->run($query, array(
-            ':c' => $lecturer["code"],
-            ':n' => $lecturer["name"],
-            ':d' => $lecturer["duration"],
-            ':f' => $lecturer["dur_format"],
-            ':fkd' => $lecturer["department"]
+        $query = "UPDATE `staff` SET `email` = :em, `first_name` = :fn, `middle_name` = :mn, `last_name` = :ln, `prefix` = :pr, `role` = :rl WHERE `number` = :num";
+        $updated = $this->db->run($query, array(
+            ':num' => $lecturer["edit-lec-number"],
+            ':em' => $lecturer["edit-lec-email"],
+            ':fn' => $lecturer["edit-lec-fname"],
+            ':mn' => $lecturer["edit-lec-mname"],
+            ':ln' => $lecturer["edit-lec-lname"],
+            ':pr' => $lecturer["edit-lec-prefix"],
+            ':rl' => $lecturer["edit-lec-role"]
         ))->update();
+        return $updated ? array("success" => true, "message" => "Staff information updated!") : array("success" => false, "message" => "Failed to add statff!");
     }
 
-    public function archive(array $lecturers): mixed
+    public function archive($lecturer): mixed
     {
-        $removed = 0;
-        foreach ($lecturers as $lecturer) {
-            $query = "UPDATE `program` SET `archived` = 1 WHERE `code` = :c";
-            $removed += $this->db->run($query, array(':c' => $lecturer["code"]))->update();
-        }
-        return $removed;
+        $query = "UPDATE `staff` SET `archived` = 1 WHERE `number` = :n";
+        $removed = $this->db->run($query, array(':n' => $lecturer["archive-lec-number"]))->update();
+        return $removed ? array("success" => true, "message" => "Staff information archived!") : array("success" => false, "message" => "Failed to archive statff!");
     }
 
     public function remove(array $lecturers)
     {
         $removed = 0;
-        foreach ($lecturers as $course) {
-            $query = "DELETE FROM `program` WHERE `code` = :p";
-            $removed += $this->db->run($query, array(":p" => $course["code"]))->delete();
+        foreach ($lecturers as $lecturer) {
+            $query = "DELETE FROM `staff` WHERE `number` = :n";
+            $removed += $this->db->run($query, array(":n" => $lecturer["number"]))->delete();
         }
         return $removed;
     }
 
+    public function fetchAll(bool $isArchived = false): mixed
+    {
+        $query = "SELECT s.* FROM `staff` AS s WHERE s.`archived` = :a";
+        return $this->db->run($query, array(":a" => $isArchived))->all();
+    }
 
     public function fetchByDepartment($departmentID, bool $isArchived = false): mixed
     {
-        $query = "SELECT s.* FROM `staff` AS s, `department` AS d WHERE s.`fk_department` = d.`id` AND d.`id` = :d AND s.`archived` = :a";
+        $query = "SELECT s.* FROM `staff` AS s, `department` AS d WHERE s.`fk_department` = d.`id` AND d.`id` = :d AND s.`archived` = :a ORDER BY s.`added_at` DESC";
         return $this->db->run($query, array(':d' => $departmentID, ":a" => $isArchived))->all();
     }
 

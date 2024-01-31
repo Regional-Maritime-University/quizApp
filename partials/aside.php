@@ -17,13 +17,13 @@
                 </a>
                 <ul id="assign-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
                     <li>
-                        <a href="assign-course.php">
-                            <i class="bi bi-circle"></i><span>Course</span>
+                        <a href="assign-to-class.php">
+                            <i class="bi bi-circle"></i><span>Course - Class</span>
                         </a>
                     </li>
                     <li>
-                        <a href="assign-class.php">
-                            <i class="bi bi-circle"></i><span>Class</span>
+                        <a href="assign-to-lecturer.php">
+                            <i class="bi bi-circle"></i><span>Course - Lecturer</span>
                         </a>
                     </li>
                 </ul>

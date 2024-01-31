@@ -38,7 +38,7 @@ class Students
         s.`nationality`, s.`photo`, s.`date_admitted` AS dateAdmitted, s.`term_admitted` AS termAdmitted, 
         s.`stream_admitted` AS streamAdmitted, s.`archived`, d.`id` AS departmentID, d.`name` AS departmentName 
         FROM `student` AS s, `department` AS d 
-        WHERE s.`fk_department` = d.`id` AND d.`id` = :d AND c.`archived` = :a";
+        WHERE s.`fk_department` = d.`id` AND d.`id` = :d AND s.`archived` = :a";
         return $this->db->run($query, array(":d" => $departmentID, ":a" => $isArchived))->all();
     }
 

@@ -14,32 +14,32 @@ class Assign
         $this->db = new Database($config);
     }
 
-    public function assignCourseToLecturer(array $courses, string $lecturer, int $semester)
+    public function sectionToLecturer(array $sections, string $lecturer, int $semester = 1)
     {
         $added = 0;
-        foreach ($courses as $course) {
-            $query = "INSERT INTO `lecture` (`fk_staff`, `fk_course`, `fk_semester`) VALUES (:s, :c, :m)";
+        foreach ($sections as $section) {
+            $query = "INSERT INTO `lecture` (`fk_staff`, `fk_section`, `fk_semester`) VALUES (:s, :c, :m)";
             $added += $this->db->run($query, array(
                 ':s' => $lecturer,
-                ':c' => $course["course"],
+                ':c' => $section["section"],
                 ':m' => $semester
             ))->add();
         }
         return $added;
     }
 
-    public function courseToClass(array $courses, string $class, int $semester)
+    public function courseToClass(array $courses, string $class, int $semester = 1)
     {
         $added = 0;
         foreach ($courses as $course) {
-            $query = "INSERT INTO `lecture` (`fk_class`, `fk_course`, `fk_semester`) VALUES (:s, :c, :m)";
+            $query = "INSERT INTO `section` (`fk_class`, `fk_course`, `fk_semester`) VALUES (:s, :c, :m)";
             $added += $this->db->run($query, array(
                 ':s' => $class,
-                ':c' => $course["course"],
+                ':c' => $course,
                 ':m' => $semester
             ))->add();
         }
-        return $added;
+        return "{$added} courses assign to this class [Code: {$class}]!";
     }
 
     public function classToStudent(array $students, string $class)

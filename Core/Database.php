@@ -49,7 +49,7 @@ class Database
 
     public function update()
     {
-        if (explode(' ', $this->query)[0] == 'DELETE') return 1;
+        if (explode(' ', $this->query)[0] == 'UPDATE') return 1;
     }
 
     public function all()

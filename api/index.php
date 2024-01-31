@@ -121,6 +121,37 @@ elseif ($_SERVER['REQUEST_METHOD'] === "POST") :
 
 
     elseif ($module === 'lecturer') :
+        $lecturer = new Lecturers($config["database"]["mysql"]);
+
+        switch ($action):
+
+            case 'add':
+                $result = $lecturer->add($_POST);
+                die(json_encode($result));
+                // $feed = Validator::SendResult($result, "New staff added!", "Failed to add staff!");
+                // die(json_encode($feed));
+
+            case 'edit':
+                $result = $lecturer->edit($_POST);
+                die(json_encode($result));
+                // $feed = Validator::SendResult($result, $result, "Failed to edit staff information!");
+                // die(json_encode($feed));
+
+            case 'archive':
+                $result = $lecturer->archive($_POST);
+                die(json_encode($result));
+                // $feed = Validator::SendResult($result, $result, "Failed to archive staff information!");
+                // die(json_encode($feed));
+
+            case 'delete':
+                $result = $lecturer->remove($_POST);
+                $feed = Validator::SendResult($result, $result, "Failed to remove staff information!");
+                die(json_encode($feed));
+
+            default:
+                # code...
+                break;
+        endswitch;
 
 
     elseif ($module === 'program') :

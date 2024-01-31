@@ -3,11 +3,12 @@ session_start();
 
 require("../bootstrap.php");
 
-use Controller\Classes;
 use Controller\Courses;
+use Controller\Lecturers;
+use Controller\Sections;
 use Core\Base;
 
-$pageTitle = "Assign Class";
+$pageTitle = "Assign Courses";
 ?>
 
 <!DOCTYPE html>
@@ -42,19 +43,18 @@ $pageTitle = "Assign Class";
                                     <h5 class="card-title"></h5>
                                     <div class="row">
                                         <div class="col-md-4">
-                                            <label for="assign-course-who" class="form-label" id="who-label">Choose Class</label>
+                                            <label for="assign-course-who" class="form-label" id="who-label">Choose</label>
                                             <select id="assign-course-who" class="form-select">
-                                                <option value="" hidden>Choose...</option>
-
+                                                <option hidden>Choose...</option>
                                                 <?php
                                                 $config = require Base::build_path("config/database.php");
-                                                $classObj = new Classes($config["database"]["mysql"]);
-                                                $classes = $classObj->fetchByDepartment($_SESSION["user"]["fk_department"]);
+                                                $lecturerObj = new Lecturers($config["database"]["mysql"]);
+                                                $lecturers = $lecturerObj->fetchAll();
 
                                                 $counter = 0;
-                                                foreach ($classes as $class) :
+                                                foreach ($lecturers as $lecturer) :
                                                 ?>
-                                                    <option value="<?= $class["classCode"] ?>"><?= $class["classCode"] ?></option>
+                                                    <option value="<?= $lecturer["number"] ?>"><?= $lecturer['prefix'] . " " . $lecturer['first_name'] . " " . $lecturer['last_name'] ?></option>
                                                 <?php
                                                     $counter++;
                                                 endforeach
@@ -88,20 +88,20 @@ $pageTitle = "Assign Class";
                                         <tbody>
                                             <?php
                                             $config = require Base::build_path("config/database.php");
-                                            $courseObj = new Courses($config["database"]["mysql"]);
-                                            $courses = $courseObj->fetchByDepartment($_SESSION["user"]["fk_department"]);
+                                            $sectionObj = new Sections($config["database"]["mysql"]);
+                                            $sections = $sectionObj->fetchByDepartment($_SESSION["user"]["fk_department"]);
 
                                             $counter = 1;
-                                            foreach ($courses as $course) :
+                                            foreach ($sections as $section) :
                                             ?>
                                                 <tr>
                                                     <th scope="row"><?= $counter ?></th>
-                                                    <td><?= $course["courseCode"] ?></td>
-                                                    <td><?= $course["courseName"] ?></td>
-                                                    <td><?= $course["creditHours"] ?></td>
+                                                    <td><?= $section["courseName"] ?></td>
+                                                    <td><?= $section["classCode"] ?></td>
+                                                    <td><?= $section["creditHours"] ?></td>
                                                     <td>
                                                         <div class="form-check">
-                                                            <input type="checkbox" class="form-check-input course" value="<?= $course["courseCode"] ?>">
+                                                            <input type="checkbox" class="form-check-input course" value="<?= $section["sectionID"] ?>">
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -121,7 +121,7 @@ $pageTitle = "Assign Class";
                     <div class="row">
                         <form id="assignCourseForm" method="POST" class="d-flex" style="justify-content: end;">
                             <input type="hidden" name="assign-what" id="assign-what" value="course">
-                            <input type="hidden" name="assign-to" id="assign-to" value="">
+                            <input type="hidden" name="assign-to" id="assign-to" value="lecturer">
                             <input type="hidden" name="assign-who" id="assign-who" value="">
                             <input type="hidden" name="assign-course-list[]" id="assign-course-list" value="">
                             <input type="hidden" name="assign-depart" id="assign-depart" value="<?= $_SESSION["user"]["fk_department"] ?>">
@@ -143,43 +143,6 @@ $pageTitle = "Assign Class";
                 if (str.length > 0) return str.charAt(0).toUpperCase() + str.slice(1);
                 else return str;
             }
-
-            let assignTo;
-
-            $("#assign-course-option").change("blur", function() {
-                $("#who-label").text(capitalizeFirstCharacter(this.value));
-                $("#assign-to").val(this.value);
-                assignTo = this.value;
-
-                $.ajax({
-                    type: "GET",
-                    url: "../api/" + this.value + "?department=" + $("#assign-depart").val(),
-                }).done(function(data) {
-                    console.log(assignTo);
-                    console.log(data);
-                    $("#assign-course-who").html('<option hidden>Choose...</option>');
-                    if (assignTo === "class") {
-                        $.each(data.message, function(index, value) {
-                            $("#assign-course-who").append(
-                                '<option value="' + value['classCode'] + '">' +
-                                (value['classCode']).trim() +
-                                '</option>'
-                            );
-                        });
-                    } else if (assignTo === "lecturer") {
-                        $.each(data.message, function(index, value) {
-                            $("#assign-course-who").append(
-                                '<option value="' + value['number'] + '">' +
-                                (value['prefix'] + " " + value['first_name'] + " " + value['last_name']).trim() +
-                                '</option>'
-                            );
-                        });
-                    }
-
-                }).fail(function(err) {
-                    console.log(err);
-                });
-            });
 
             $("#assign-course-who").change("blur", function() {
                 $("#assign-who").val(this.value);

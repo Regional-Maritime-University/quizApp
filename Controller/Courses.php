@@ -64,6 +64,13 @@ class Courses
         return $removed;
     }
 
+    public function fetchAll(bool $isArchived = false): mixed
+    {
+        $query = "SELECT c.`code` AS courseCode, c.`name` AS courseName, c.`credit_hours` AS creditHours 
+        FROM `course` AS c WHERE c.`archived` = :a";
+        return $this->db->run($query, array(":a" => $isArchived))->all();
+    }
+
     public function fetchByDepartment($departmentID, bool $isArchived = false): mixed
     {
         $query = "SELECT c.`code` AS courseCode, c.`name` AS courseName, c.`credit_hours` AS creditHours, 
