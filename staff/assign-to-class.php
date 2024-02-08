@@ -1,6 +1,11 @@
 <?php
 session_start();
 
+if (!isset($_SESSION["isLoggedIn"]) || $_SESSION["isLoggedIn"] !== true) {
+    // Redirect to index.php
+    header("Location: ./index.php");
+    exit(); // Make sure to exit after redirection
+}
 require("../bootstrap.php");
 
 use Controller\Classes;
@@ -69,13 +74,12 @@ $pageTitle = "Assign Class";
                     </div>
 
                     <div class="row">
-                        <div class="col-xxl-12 col-md-12">
+                        <div class="col-lg-12">
                             <div class="card">
                                 <div class="card-body">
                                     <h5 class="card-title">Courses</h5>
-                                    <!-- Bordered Table -->
-                                    <table class="table table-bordered">
-                                        <thead>
+                                    <!-- Borderless Table -->
+                                    <table class="table table-borderless datatable">                                        <thead>
                                             <tr>
                                                 <th scope="col">SN.</th>
                                                 <th scope="col">Code</th>

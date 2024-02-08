@@ -1,4 +1,8 @@
 <?php
+
+use Controller\Programs;
+use Controller\Students;
+
 session_start();
 /*
 * Designed and programmed by
@@ -52,37 +56,81 @@ if ($_SERVER['REQUEST_METHOD'] === "GET") :
             default:
         endswitch;
 
-    elseif ($module ===  'class') :
-        $classObj = new Classes($config["database"]["mysql"]);
+    elseif ($module === "class") :
+        $class = new Classes($config["database"]["mysql"]);
 
         switch (key($_GET)):
             case 'department':
-                $result = $classObj->fetchByDepartment($_GET["department"]);
-                $feed = Validator::SendResult($result, $result, "Staff details not found!");
+                $result = $class->fetchByDepartment($_GET["department"]);
+                $feed = Validator::SendResult($result, $result, "Class not found!");
                 die(json_encode($feed));
 
-            case 'program':
-                $result = $classObj->fetchByProgram($_GET["program"]);
-                $feed = Validator::SendResult($result, $result, "Staff details not found!");
-                die(json_encode($feed));
-
-            case 'code':
-                $result = $classObj->fetchByCode($_GET["code"]);
-                $feed = Validator::SendResult($result, $result, "Staff details not found!");
+            case 'class':
+                $result = $class->fetchByCode($_GET["class"]);
+                $feed = Validator::SendResult($result, $result, "Class not found!");
                 die(json_encode($feed));
 
             default:
         endswitch;
 
-    elseif ($module ===  'lecturer') :
+
+    elseif ($module === "student") :
+        $student = new Students($config["database"]["mysql"]);
+
+        switch (key($_GET)):
+            case 'department':
+                $result = $student->fetchByDepartment($_GET["department"]);
+                $feed = Validator::SendResult($result, $result, "Staff details not found!");
+                die(json_encode($feed));
+
+            case 'student':
+                $result = $student->fetchByIndexNumber($_GET["student"]);
+                $feed = Validator::SendResult($result, $result, "Staff details not found!");
+                die(json_encode($feed));
+
+
+
+            default:
+        endswitch;
+
+    // elseif ($module ===  'lecturer') :
 
     elseif ($module ===  'program') :
+        $program = new Programs($config["database"]["mysql"]);
+
+        switch (key($_GET)):
+            case 'department':
+                $result = $program->fetchByDepartment($_GET["department"]);
+                $feed = Validator::SendResult($result, $result, "Staff details not found!");
+                die(json_encode($feed));
+
+            case 'program':
+                $result = $program->fetchByCode($_GET["program"]);
+                $feed = Validator::SendResult($result, $result, "Staff details not found!");
+                die(json_encode($feed));
+
+
+
+            default:
+        endswitch;
+
 
     elseif ($module ===  'course') :
         $course = new Courses($config["database"]["mysql"]);
-        $result = $course->fetchByDepartment(1);
-        if (!empty($result)) die(array("success" => true, "data" => json_encode($result)));
-        die(array("success" => false, "data" => "No result found!"));
+        // $result = $course->fetchByDepartment(1);
+        // if (!empty($result)) die(array("success" => true, "data" => json_encode($result)));
+        // die(array("success" => false, "data" => "No result found!"));
+
+        switch (key($_GET)):
+            case 'course':
+                $result = $course->fetchByCode($_GET["course"]);
+                $feed = Validator::SendResult($result, $result, "Course details not found!");
+                die(json_encode($feed));
+
+
+
+            default:
+        endswitch;
 
     elseif ($module ===  'class') :
 
@@ -105,6 +153,14 @@ elseif ($_SERVER['REQUEST_METHOD'] === "POST") :
                     $_SESSION["isLoggedIn"] = true;
                     unset($result["password"]);
                     $_SESSION["user"] = $result;
+
+                    // Accessing user data
+                    $mname = $_SESSION["user"]["middle_name"];
+                    $lname = $_SESSION["user"]["last_name"];
+                    $fname = $_SESSION["user"]["first_name"];
+
+                    // $email = $_SESSION["user"]["email"];
+                    $role = $_SESSION["user"]["role"];
                 endif;
 
                 die(json_encode($feed));
@@ -153,45 +209,147 @@ elseif ($_SERVER['REQUEST_METHOD'] === "POST") :
                 break;
         endswitch;
 
+    elseif ($module === 'student') :
+        $student = new Students($config["database"]["mysql"]);
+
+        switch ($action):
+
+            case 'add':
+                $result = $student->add($_POST);
+                die(json_encode($result));
+                // $feed = Validator::SendResult($result, "New staff added!", "Failed to add staff!");
+                // die(json_encode($feed));
+
+            case 'edit':
+                $result = $student->edit($_POST);
+                die(json_encode($result));
+                // $feed = Validator::SendResult($result, $result, "Failed to edit staff information!");
+                // die(json_encode($feed));
+
+            case 'archive':
+                $result = $student->archive($_POST);
+                die(json_encode($result));
+                // $feed = Validator::SendResult($result, $result, "Failed to archive staff information!");
+                // die(json_encode($feed));
+
+            case 'delete':
+                $result = $student->remove($_POST);
+                $feed = Validator::SendResult($result, $result, "Failed to remove staff information!");
+                die(json_encode($feed));
+
+            default:
+                # code...
+                break;
+        endswitch;
+
+
+    elseif ($module === 'class') :
+        $classes = new Classes($config["database"]["mysql"]);
+
+        switch ($action):
+
+            case 'add':
+                $result = $classes->add($_POST);
+                die(json_encode($result));
+                // $feed = Validator::SendResult($result, "New staff added!", "Failed to add staff!");
+                // die(json_encode($feed));
+
+            case 'edit':
+                $result = $classes->edit($_POST);
+                die(json_encode($result));
+                // $feed = Validator::SendResult($result, $result, "Failed to edit staff information!");
+                // die(json_encode($feed));
+
+            case 'archive':
+                $result = $classes->archive($_POST);
+                die(json_encode($result));
+                // $feed = Validator::SendResult($result, $result, "Failed to archive staff information!");
+                // die(json_encode($feed));
+
+            case 'delete':
+                $result = $classes->remove($_POST);
+                $feed = Validator::SendResult($result, $result, "Failed to remove staff information!");
+                die(json_encode($feed));
+
+            default:
+                # code...
+                break;
+        endswitch;
+
+
+
 
     elseif ($module === 'program') :
+        $programs = new Programs($config["database"]["mysql"]);
+
+        switch ($action):
+
+            case 'add':
+                $result = $programs->add($_POST);
+                die(json_encode($result));
+                // $feed = Validator::SendResult($result, "New staff added!", "Failed to add staff!");
+                // die(json_encode($feed));
+
+            case 'edit':
+                $result = $programs->edit($_POST);
+                die(json_encode($result));
+                // $feed = Validator::SendResult($result, $result, "Failed to edit staff information!");
+                // die(json_encode($feed));
+
+            case 'archive':
+                $result = $programs->archive($_POST);
+                die(json_encode($result));
+                // $feed = Validator::SendResult($result, $result, "Failed to archive staff information!");
+                // die(json_encode($feed));
+
+            case 'delete':
+                $result = $programs->remove($_POST);
+                $feed = Validator::SendResult($result, $result, "Failed to remove staff information!");
+                die(json_encode($feed));
+
+            default:
+                # code...
+                break;
+        endswitch;
+
+
 
 
     elseif ($module === 'course') :
         $course = new Courses($config["database"]["mysql"]);
-        $result = $course->fetchByDepartment(1);
-        if (!empty($result)) die(array("success" => true, "data" => json_encode($result)));
-        die(array("success" => false, "data" => "No result found!"));
+
+        switch ($action):
+
+            case 'add':
+                $result = $course->add($_POST);
+                die(json_encode($result));
+                // $feed = Validator::SendResult($result, "New staff added!", "Failed to add staff!");
+                // die(json_encode($feed));
+
+            case 'edit':
+                $result = $course->edit($_POST);
+                die(json_encode($result));
+                // $feed = Validator::SendResult($result, $result, "Failed to edit staff information!");
+                // die(json_encode($feed));
+
+            case 'archive':
+                $result = $course->archive($_POST);
+                die(json_encode($result));
+                // $feed = Validator::SendResult($result, $result, "Failed to archive staff information!");
+                // die(json_encode($feed));
+
+            case 'delete':
+                $result = $course->remove($_POST);
+                $feed = Validator::SendResult($result, $result, "Failed to remove staff information!");
+                die(json_encode($feed));
+
+            default:
+                # code...
+                break;
+        endswitch;
 
     elseif ($module === 'class') :
 
     endif;
 
 endif;
-
-// student login
-/*if ($_GET["url"] == "studentLogin") {
-    if (!isset($_SESSION["_start"]) || !isset($_POST["_logToken"]) || empty($_SESSION["_start"]) || empty($_POST["_logToken"]))
-        die(json_encode(array("success" => false, "message" => "Missing required parameters!")));
-    if ($_POST["_logToken"] !== $_SESSION["_start"]) die(json_encode(array("success" => false, "message" => "Invalid request!")));
-    if (!isset($_POST["index_number"])) die(json_encode(array("success" => false, "message" => "Missing input: Index number is required!")));
-    if (!isset($_POST["password"])) die(json_encode(array("success" => false, "message" => "Missing input: Password is required!")));
-
-    $index_number = Validator::IndexNumber($_POST["index_number"]);
-    $password = Validator::Password($_POST["password"]);
-    $result = $user->loginStudent($index_number, $password);
-
-    if (!$result) {
-        $_SESSION['isLoggedIn'] = true;
-        die(json_encode(array("success" => false, "message" => "Incorrect index number or password! ")));
-    }
-
-    $_SESSION['studentIndexNumber'] = $result["index_number"];
-    $_SESSION['isLoggedIn'] = true;
-
-    die(json_encode(array("success" => true, "message" => "Login successfull!")));
-}
-
-// Register courses
-else if ($_GET["url"] == "registerCourses") {
-}*/

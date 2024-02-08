@@ -15,36 +15,41 @@ class Classes
     }
 
     // CRUD for Class
-    public function add(array $classes): mixed
+ 
+
+    public function add(array $data)
     {
-        $added = 0;
-        foreach ($classes as $class) {
-            $query = "INSERT INTO `class` (`code`, `fk_program`) VALUES (:c, :fkp)";
-            $added += $this->db->run($query, array(
-                ':c' => $class["code"],
-                ':fkp' => $class["program"]
-            ))->add();
-        }
-        return $added;
+        $exists = $this->fetchByCode($data["class_code"]);
+        if (!empty($exists)) return array("success" => false, "message" => "Class exist!");
+        
+        $query = "INSERT INTO `class` (`code`, `fk_program`) VALUES (:c, :fkp)";
+          $added = $this->db->run($query, array(
+            ':c' => $data["class_code"],
+            ':fkp' => $data["program"]
+        ))->add();
+        return $added ? array("success" => true, "message" => "New Class added!") : array("success" => false, "message" => "Failed to add class!");
     }
+
 
     public function edit(array $class): mixed
     {
-        $query = "UPDATE `class` SET `code` = :c, `fk_program` = :fkp WHERE `code` = :c";
-        return $this->db->run($query, array(
-            ':c' => $class["code"],
-            ':fkp' => $class["program"]
+        $query = "UPDATE `class` SET `code` = :c, `fk_program` = :fkp WHERE `code` = :ec";
+        $updated = $this->db->run($query, array(
+            ':c' => $class["edit-class-code"],
+            ':ec' => $class["edit_class"],
+            ':fkp' => $class["edit-class-program"]
         ))->update();
+        return $updated ? array("success" => true, "message" => "Class details updated!") : array("success" => false, "message" => "Failed to update class!");
+
     }
 
-    public function archive(array $classes): mixed
+    public function archive(array $class): mixed
     {
-        $archived = 0;
-        foreach ($classes as $class) {
+    
             $query = "UPDATE `class` SET `archived` = 1  WHERE `code` = :c";
-            $archived += $this->db->run($query, array(':c' => $class["code"]))->update();
-        }
-        return $archived;
+            $removed = $this->db->run($query, array(':c' => $class["archive-class-code"]))->update();
+            return $removed ? array("success" => true, "message" => "Class archived!") : array("success" => false, "message" => "Failed to archive class!");
+
     }
 
     public function remove(array $classes)
@@ -78,6 +83,6 @@ class Classes
         $query = "SELECT c.`code` AS classCode, p.`code` AS programCode, p.`name` AS programName 
                     FROM `class` AS c, `program` AS p, `department` AS d 
                     WHERE p.`code` = c.`fk_program` AND p.`fk_department` = d.`id` AND c.`code` = :c AND c.`archived` = :a";
-        return $this->db->run($query, array(':c' => $code, ":a" => $isArchived))->all();
+        return $this->db->run($query, array(':c' => $code, ":a" => $isArchived))->one();
     }
 }

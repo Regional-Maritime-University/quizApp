@@ -1,6 +1,11 @@
 <?php
 session_start();
 
+if (!isset($_SESSION["isLoggedIn"]) || $_SESSION["isLoggedIn"] !== true) {
+    // Redirect to index.php
+    header("Location: ./index.php");
+    exit(); // Make sure to exit after redirection
+}
 require("../bootstrap.php");
 
 use Core\Base;
@@ -29,25 +34,68 @@ $pageTitle = "Programs";
         <?php require Base::build_path("partials/page-title.php") ?>
 
         <section class="section dashboard">
-            <div class="row">
-
-                <!-- Left side columns -->
-                <div class="col-lg-12">
-                    <div class="row mb-4">
-                        <!-- Add new lectuer modal -->
-                        <div class="col-xxl-12 col-md-12">
-                            <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#addNewLecturer">Add</button>
+        <div class="row">
+        <div class="col-lg-12">
+              <div class="card">
+            <div class="card-body">
+                <p></p>
+              <!-- Vertically centered Modal -->
+              <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addNewProgram">
+               ADD
+              </button> <div class="modal fade" id="addNewProgram" tabindex="-1">
+            <div class="modal-dialog modal-fullscreen">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add new Program</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" style="display: grid; place-items: center; height: 100vh; margin: 0;">
+                        <div style="display: flex; width:600px">
+                            <!-- Multi Columns Form -->
+                            <form id="addNewProgForm" class="row g-3" method="POST">
+                               
+                                <div class="col-md-8">
+                                    <label for="add-prog-code" class="form-label">Program Code</label>
+                                    <input type="text" class="form-control" id="add-prog-code" name="add-prog-code" value="">
+                                </div>
+                                <div class="col-md-8">
+                                    <label for="add-prog-name" class="form-label">Program Name</label>
+                                    <input type="text" class="form-control" id="add-prog-name" name="add-prog-name" value="">
+                                </div>
+                                <div class="col-md-8">
+                                    <label for="add-prog-duration" class="form-label">Duration</label>
+                                    <input type="text" class="form-control" id="add-prog-duration" name="add-prog-duration" value="" placeholder="Duration for that program" >
+                                </div>
+                              
+                           
+                                <input type="hidden" name="department" value="<?= $_SESSION["user"]["fk_department"] ?>">
+                            </form><!-- End Multi Columns Form -->
                         </div>
                     </div>
+                    <div class="modal-footer">
+                        <label class="btn btn-secondary" data-bs-dismiss="modal">Close</label>
+                        <label class="btn btn-primary" for="add-program" id="addNewProgBtn">Save changes</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+             <!-- End Vertically centered Modal-->
+            
+            </div>
+          </div>
 
+      </div>
+    </div> 
+            <div class="row">
+                <!-- Left side columns -->
+                <div class="col-lg-12">
                     <div class="row">
-                        <div class="col-xxl-12 col-md-12">
+                        <div class="col-lg-12">
                             <div class="card">
                                 <div class="card-body">
                                     <h5 class="card-title">Programs</h5>
                                     <!-- Bordered Table -->
-                                    <table class="table table-bordered">
-                                        <thead>
+                                    <table class="table table-borderless datatable">                                        <thead>
                                             <tr>
                                                 <th scope="col">#</th>
                                                 <th scope="col">Program Code</th>
@@ -71,10 +119,8 @@ $pageTitle = "Programs";
                                                     <td><?= trim($programs["programDuration"] . " " . $programs["durationFormat"]) ?></td>
 
                                                     <td style="display: flex;">
-                                                        <button type="button" class="btn btn-primary btn-sm me-2 editprogramData" data-program="<?= $programs["programCode"] ?>" data-bs-toggle="modal" data-bs-target="#editProgram">Edit</button>
-                                                        <form action="" method="post">
-                                                            <input type="hidden" name="program" value="<?= $programs["programCode"] ?>">
-                                                            <button type="submit" class="btn btn-danger btn-sm">Archive</button>
+                                                        <button type="button" class="btn btn-primary btn-sm me-2 editProgramData" data-program="<?= $programs["programCode"] ?>" data-bs-toggle="modal" data-bs-target="#editProgram">Edit</button>
+                                                                                                              <button type="button" class="btn btn-danger btn-sm archiveBtn" id="<?= $programs["programCode"] ?>">Archive</button>
                                                         </form>
                                                     </td>
                                                 </tr>
@@ -108,73 +154,34 @@ $pageTitle = "Programs";
                         <div style="display: flex; width:600px">
                             <!-- Multi Columns Form -->
                             <form id="addNewProgForm" class="row g-3" method="POST">
-                                <div class="col-md-4">
-                                    <label for="add-prog-prefix" class="form-label">Prefix</label>
-                                    <select name="add-prog-prefix" id="add-prog-prefix" class="form-select">
-                                        <option hidden>Choose...</option>
-                                        <option value="Mr">Mr</option>
-                                        <option value="Mrs">Mrs</option>
-                                        <option value="Miss">Miss</option>
-                                    </select>
+                               
+                                <div class="col-md-8">
+                                    <label for="add-prog-code" class="form-label">Program Code</label>
+                                    <input type="text" class="form-control" id="add-prog-code" name="add-prog-code" value="">
                                 </div>
                                 <div class="col-md-8">
-                                    <label for="add-prog-fname" class="form-label">First Name</label>
-                                    <input type="text" class="form-control" id="add-prog-fname" name="add-prog-fname" value="">
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="add-prog-mname" class="form-label">Middle Name</label>
-                                    <input type="text" class="form-control" id="add-prog-mname" name="add-prog-mname" value="">
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="add-prog-lname" class="form-label">Last Name</label>
-                                    <input type="text" class="form-control" id="add-prog-lname" name="add-prog-lname" value="">
+                                    <label for="add-prog-name" class="form-label">Program Name</label>
+                                    <input type="text" class="form-control" id="add-prog-name" name="add-prog-name" value="">
                                 </div>
                                 <div class="col-md-8">
-                                    <label for="add-prog-email" class="form-label">Email</label>
-                                    <input type="email" class="form-control" id="add-prog-email" name="add-prog-email" value="">
+                                    <label for="add-prog-duration" class="form-label">Duration</label>
+                                    <input type="text" class="form-control" id="add-prog-duration" name="add-prog-duration" value="" placeholder="Duration for that program" >
                                 </div>
-                                <div class="col-md-4">
-                                    <label for="add-prog-role" class="form-label">Role</label>
-                                    <select id="add-prog-role" name="add-prog-role" class="form-select">
-                                        <option hidden>Choose...</option>
-                                        <option value="lecturer">LECTURER</option>
-                                        <option value="hod">HOD</option>
-                                        <option value="secretary">SECRETARY</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-4">
-                                    <label for="gender" class="form-label">Gender</label>
-                                    <div class="form-check">
-                                        <input type="radio" name="add-prog-gender" id="maleGender" class="form-check-input" value="M">
-                                        <label for="maleGender" class="form-check-label">M</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input type="radio" name="add-prog-gender" id="femaleGender" class="form-check-input" value="F">
-                                        <label for="femaleGender" class="form-check-label">F</label>
-                                    </div>
-                                </div>
-                                <input type="hidden" name="add-prog-depart" value="<?= $_SESSION["user"]["fk_department"] ?>">
+                              
+                           
+                                <input type="hidden" name="department" value="<?= $_SESSION["user"]["fk_department"] ?>">
                             </form><!-- End Multi Columns Form -->
                         </div>
                     </div>
                     <div class="modal-footer">
                         <label class="btn btn-secondary" data-bs-dismiss="modal">Close</label>
-                        <label class="btn btn-primary" for="add-lecturer" id="addNewProgBtn">Save changes</label>
+                        <label class="btn btn-primary" for="add-program" id="addNewProgBtn">Save changes</label>
                     </div>
                 </div>
             </div>
         </div><!-- End Full Screen Modal-->
 
-        <?php
-        // if (isset($_GET["number"]) && !empty($_GET["number"])) :
-
-        //     $programs = new Lecturers($config["database"]["mysql"]);
-        //     $all_lecturers = $lecturers->fetchByDepartment($_SESSION["user"]["fk_department"]);
-
-        //     $counter = 1;
-        //     foreach ($all_lecturers as $lecturer) :
-
-        ?>
+        
         <!-- Edit Lectuer modal -->
         <div class="modal fade" id="editProgram" tabindex="-1">
             <div class="modal-dialog modal-fullscreen">
@@ -187,51 +194,33 @@ $pageTitle = "Programs";
 
                         <div style="display: flex; width:600px">
                             <!-- Multi Columns Form -->
-                            <form class="row g-3">
-                                <div class="col-md-8">
-                                    <label for="edit-prog-fname" class="form-label">First Name</label>
-                                    <input type="text" class="form-control" id="edit-prog-fname" name="edit-prog-fname" value="">
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="edit-prog-mname" class="form-label">Middle Name</label>
-                                    <input type="text" class="form-control" id="edit-prog-mname" name="edit-prog-mname" value="">
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="edit-prog-lname" class="form-label">Last Name</label>
-                                    <input type="text" class="form-control" id="edit-prog-lname" name="edit-prog-lname" value="">
+                            <form class="row g-3" method="POST"  id="editProgForm">
+                             
+                                        
+                            <div class="col-md-8">
+                                    <label for="edit-prog-code" class="form-label">Program Code</label>
+                                    <input type="text" class="form-control" id="edit-prog-code" name="edit-prog-code" value="">
                                 </div>
                                 <div class="col-md-8">
-                                    <label for="edit-prog-email" class="form-label">Email</label>
-                                    <input type="email" class="form-control" id="edit-prog-email" name="edit-prog-email" value="">
+                                    <label for="edit-prog-name" class="form-label">Program Name</label>
+                                    <input type="text" class="form-control" id="edit-prog-name" name="edit-prog-name" value="">
                                 </div>
-                                <div class="col-md-4">
-                                    <label for="edit-prog-role" class="form-label">Role</label>
-                                    <select id="edit-prog-role" class="form-select">
-                                        <option hidden>Choose...</option>
-                                        <option value="lecturer">LECTURER</option>
-                                        <option value="hod">HOD</option>
-                                        <option value="secretary">SECRETARY</option>
-                                    </select>
+                                <div class="col-md-8">
+                                    <label for="edit-prog-duration" class="form-label">Duration</label>
+                                    <input type="text" class="form-control" id="edit-prog-duration" name="edit-prog-duration" value="" placeholder="Duration for that program" >
                                 </div>
-                                <div class="col-md-4">
-                                    <div class="row">
-                                        <label for="gender" class="form-label">Gender</label>
-                                        <div class="form-check">
-                                            <input type="radio" name="edit-prog-gender" id="maleGender" class="form-check-input" value="M">
-                                            <label for="maleGender" class="form-check-label">M</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input type="radio" name="edit-prog-gender" id="femaleGender" class="form-check-input" value="F">
-                                            <label for="femaleGender" class="form-check-label">F</label>
-                                        </div>
-                                    </div>
-                                </div>
+                                 <div class="col-md-8">
+                                    <label for="edit-prog-format" class="form-label">Format</label>
+                                    <input type="text" class="form-control" id="edit-prog-format" name="edit-prog-format" value="" >
+                                <input type="hidden" name="edit-prog-number" id="edit-prog-number" value="">
+                                <input type="hidden" name="department" value="<?= $_SESSION["user"]["fk_department"] ?>">
+
                             </form><!-- End Multi Columns Form -->
                         </div>
                     </div>
                     <div class="modal-footer">
                         <label class="btn btn-secondary" data-bs-dismiss="modal">Close</label>
-                        <label class="btn btn-primary" for="edit-progturer">Save changes</label>
+                        <label class="btn btn-primary" for="edit-program" id="editProgBtn">Save changes</label>
                     </div>
                 </div>
             </div>
@@ -248,18 +237,21 @@ $pageTitle = "Programs";
         $(document).ready(function() {
 
             $(".editProgramData").on("click", function() {
-                lecID = this.dataset.lecturer;
+                progID = this.dataset.program;
 
                 $.ajax({
                     type: "GET",
-                    url: "../api/program/fetch?staff=" + lecID,
+                    url: "../api/program/fetch?program=" + progID,
                 }).done(function(data) {
                     console.log(data);
                     if (data.success) {
-                        $("#edit-prog-fname").val(data.message["first_name"]);
-                        $("#edit-prog-mname").val(data.message["middle_name"]);
-                        $("#edit-prog-lname").val(data.message["last_name"]);
-                        $("#edit-prog-email").val(data.message["email"]);
+                        $("#edit-prog-name").val(data.message["programName"]);
+                        $("#edit-prog-code").val(data.message["programCode"]);
+                        $("#edit-prog-duration").val(data.message["programDuration"]);
+                        $("#edit-prog-number").val(data.message["programCode"]);
+                        $("#edit-prog-format").val(data.message["durationFormat"]);
+
+                        
                     } else {
                         alert(data.message)
                     }
@@ -276,7 +268,7 @@ $pageTitle = "Programs";
                 e.preventDefault();
 
                 $.ajax({
-                    type: "GET",
+                    type: "POST",
                     url: "../api/program/add",
                     data: new FormData(this),
                     contentType: false,
@@ -284,18 +276,54 @@ $pageTitle = "Programs";
                     cache: false,
                 }).done(function(data) {
                     console.log(data);
-                    if (data.success) {
-                        $("#edit-prog-fname").val(data.message["first_name"]);
-                        $("#edit-prog-mname").val(data.message["middle_name"]);
-                        $("#edit-prog-lname").val(data.message["last_name"]);
-                        $("#edit-prog-email").val(data.message["email"]);
-                    } else {
-                        alert(data.message)
-                    }
+                    alert(data.message);
+                    if (data.success) window.location.reload();
                 }).fail(function(err) {
                     console.log(err);
                 });
-            })
+            });
+
+            $("#editProgBtn").on("click", function() {
+                $("#editProgForm").submit();
+            });
+
+            $("#editProgForm").on("submit", function(e) {
+                e.preventDefault();
+
+                $.ajax({
+                    type: "POST",
+                    url: "../api/program/edit",
+                    data: new FormData(this),
+                    contentType: false,
+                    processData: false,
+                    cache: false,
+                }).done(function(data) {
+                    console.log(data);
+                    alert(data.message);
+                    if (data.success) window.location.reload();
+                }).fail(function(err) {
+                    console.log(err);
+                });
+            });
+            $(".archiveBtn").on("click", function() {
+                if (confirm("Are you sure you want to archive this student's information?")) {
+                    formData = {
+                        "archive-prog": $(this).attr("id")
+                    }
+
+                    $.ajax({
+                        type: "POST",
+                        url: "../api/program/archive",
+                        data: formData,
+                    }).done(function(data) {
+                        console.log(data);
+                        alert(data.message);
+                        if (data.success) window.location.reload();
+                    }).fail(function(err) {
+                        console.log(err);
+                    });
+                }
+            });
         });
     </script>
 

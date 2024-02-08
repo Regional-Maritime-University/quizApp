@@ -1,6 +1,12 @@
 <?php
 session_start();
 
+if (!isset($_SESSION["isLoggedIn"]) || $_SESSION["isLoggedIn"] !== true) {
+    // Redirect to index.php
+    header("Location: ./index.php");
+    exit(); // Make sure to exit after redirection
+}
+
 require("../bootstrap.php");
 
 use Core\Base;
@@ -29,70 +35,19 @@ $pageTitle = "Lecturers";
         <?php require Base::build_path("partials/page-title.php") ?>
 
         <section class="section dashboard">
-            <div class="row">
+             <div class="row">
+        <div class="col-lg-12">
 
-                <!-- Left side columns -->
-                <div class="col-lg-12">
-                    <div class="row mb-4">
-                        <!-- Add new lectuer modal -->
-                        <div class="col-xxl-12 col-md-12">
-                            <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#addNewLecturer">Add</button>
-                        </div>
-                    </div>
 
-                    <div class="row">
-                        <div class="col-xxl-12 col-md-12">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h5 class="card-title">Bordered Table</h5>
-                                    <!-- Bordered Table -->
-                                    <table class="table table-bordered">
-                                        <thead>
-                                            <tr>
-                                                <th scope="col">#</th>
-                                                <th scope="col">Name</th>
-                                                <th scope="col">Role</th>
-                                                <th scope="col">Gender</th>
-                                                <th scope="col"></th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <?php
-                                            $lecturers = new Lecturers($config["database"]["mysql"]);
-                                            $all_lecturers = $lecturers->fetchByDepartment($_SESSION["user"]["fk_department"]);
-                                            $counter = 1;
-                                            foreach ($all_lecturers as $lecturer) :
-                                            ?>
-                                                <tr>
-                                                    <th scope="row"><?= $counter ?></th>
-                                                    <td><?= trim($lecturer["prefix"] . " " . $lecturer["first_name"] . " " . $lecturer["middle_name"] . " " . $lecturer["last_name"]) ?></td>
-                                                    <td><?= $lecturer["role"] ?></td>
-                                                    <td><?= $lecturer["gender"] ?></td>
-                                                    <td style="display: flex;">
-                                                        <button type="button" class="btn btn-primary btn-sm me-2 editLecturerData" data-lecturer="<?= $lecturer["number"] ?>" data-bs-toggle="modal" data-bs-target="#editLecturer">Edit</button>
-                                                        <button type="button" class="btn btn-danger btn-sm archiveBtn" id="<?= $lecturer["number"] ?>">Archive</button>
-                                                    </td>
-                                                </tr>
-                                            <?php
-                                                $counter++;
-                                            endforeach
-                                            ?>
-                                        </tbody>
-                                    </table>
-                                    <!-- End Bordered Table -->
-
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div><!-- End Left side columns -->
-            </div><!-- End Left side columns -->
-
-            </div>
-        </section>
-
-        <!-- Add new lecturer modal -->
-        <div class="modal fade" id="addNewLecturer" tabindex="-1">
+  <div class="card">
+            <div class="card-body">
+<p></p>
+              <!-- Vertically centered Modal -->
+              <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addNewLecturer">
+               ADD
+              </button>
+             <!-- End Vertically centered Modal-->
+             <div class="modal fade" id="addNewLecturer" tabindex="-1">
             <div class="modal-dialog modal-fullscreen">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -162,18 +117,70 @@ $pageTitle = "Lecturers";
                     </div>
                 </div>
             </div>
-        </div><!-- End Full Screen Modal-->
+        </div>
+            </div>
+          </div>
 
-        <?php
-        // if (isset($_GET["number"]) && !empty($_GET["number"])) :
+      </div>
+    </div> 
+            <div class="row">
+                <!-- Left side columns -->
+                <div class="col-lg-12">
+                  
 
-        //     $lecturers = new Lecturers($config["database"]["mysql"]);
-        //     $all_lecturers = $lecturers->fetchByDepartment($_SESSION["user"]["fk_department"]);
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Lecturers</h5>
+                                    <!-- Bordered Table -->
+                                    <table class="table table-borderless datatable">                                        <thead>
+                                            <tr>
+                                                <th scope="col">#</th>
+                                                <th scope="col">Name</th>
+                                                <th scope="col">Role</th>
+                                                <th scope="col">Gender</th>
+                                                <th scope="col"></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php
+                                            $lecturers = new Lecturers($config["database"]["mysql"]);
+                                            $all_lecturers = $lecturers->fetchByDepartment($_SESSION["user"]["fk_department"]);
+                                            $counter = 1;
+                                            foreach ($all_lecturers as $lecturer) :
+                                            ?>
+                                                <tr>
+                                                    <th scope="row"><?= $counter ?></th>
+                                                    <td><?= trim($lecturer["prefix"] . " " . $lecturer["first_name"] . " " . $lecturer["middle_name"] . " " . $lecturer["last_name"]) ?></td>
+                                                    <td><?= $lecturer["role"] ?></td>
+                                                    <td><?= $lecturer["gender"] ?></td>
+                                                    <td style="display: flex;">
+                                                        <button type="button" class="btn btn-primary btn-sm me-2 editLecturerData" data-lecturer="<?= $lecturer["number"] ?>" data-bs-toggle="modal" data-bs-target="#editLecturer">Edit</button>
+                                                        <button type="button" class="btn btn-danger btn-sm archiveBtn" id="<?= $lecturer["number"] ?>">Archive</button>
+                                                    </td>
+                                                </tr>
+                                            <?php
+                                                $counter++;
+                                            endforeach
+                                            ?>
+                                        </tbody>
+                                    </table>
+                                    <!-- End Bordered Table -->
 
-        //     $counter = 1;
-        //     foreach ($all_lecturers as $lecturer) :
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- End Left side columns -->
+            </div><!-- End Left side columns -->
 
-        ?>
+            </div>
+        </section>
+
+        <!-- Add new lecturer modal -->
+   <!-- End Full Screen Modal-->
+
         <!-- Edit Lectuer modal -->
         <div class="modal fade" id="editLecturer" tabindex="-1">
             <div class="modal-dialog modal-fullscreen">
@@ -220,19 +227,7 @@ $pageTitle = "Lecturers";
                                         <option value="hod"> HOD </option>
                                     </select>
                                 </div>
-                                <!--<div class="col-md-4">
-                                    <div class="row">
-                                        <label for="gender" class="form-label">Gender</label>
-                                        <div class="form-check">
-                                            <input type="radio" name="edit-lec-gender" id="maleGender" class="form-check-input" value="M">
-                                            <label for="maleGender" class="form-check-label">M</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input type="radio" name="edit-lec-gender" id="femaleGender" class="form-check-input" value="F">
-                                            <label for="femaleGender" class="form-check-label">F</label>
-                                        </div>
-                                    </div>
-                                </div>-->
+                                
                                 <input type="hidden" name="edit-lec-number" id="edit-lec-number" value="">
                             </form><!-- End Multi Columns Form -->
                         </div>

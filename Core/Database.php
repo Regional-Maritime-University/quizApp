@@ -5,7 +5,7 @@ namespace Core;
 use PDO;
 use PDOException;
 use Exception;
-use Core\Base;
+// use Core\Base;
 
 class Database
 {

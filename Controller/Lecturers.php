@@ -34,7 +34,7 @@ class Lecturers
             ':rl' => $data["add-lec-role"],
             ':fkd' => $data["add-lec-depart"]
         ))->add();
-        return $added ? array("success" => true, "message" => "New staff added!") : array("success" => false, "message" => "Failed to add statff!");
+        return $added ? array("success" => true, "message" => "New staff added!") : array("success" => false, "message" => "Failed to add staff!");
     }
     public function edit(array $lecturer): mixed
     {
@@ -48,14 +48,14 @@ class Lecturers
             ':pr' => $lecturer["edit-lec-prefix"],
             ':rl' => $lecturer["edit-lec-role"]
         ))->update();
-        return $updated ? array("success" => true, "message" => "Staff information updated!") : array("success" => false, "message" => "Failed to add statff!");
+        return $updated ? array("success" => true, "message" => "Staff information updated!") : array("success" => false, "message" => "Failed to add staff!");
     }
 
     public function archive($lecturer): mixed
     {
         $query = "UPDATE `staff` SET `archived` = 1 WHERE `number` = :n";
         $removed = $this->db->run($query, array(':n' => $lecturer["archive-lec-number"]))->update();
-        return $removed ? array("success" => true, "message" => "Staff information archived!") : array("success" => false, "message" => "Failed to archive statff!");
+        return $removed ? array("success" => true, "message" => "Staff information archived!") : array("success" => false, "message" => "Failed to archive staff!");
     }
 
     public function remove(array $lecturers)
@@ -70,7 +70,7 @@ class Lecturers
 
     public function fetchAll(bool $isArchived = false): mixed
     {
-        $query = "SELECT s.* FROM `staff` AS s WHERE s.`archived` = :a";
+        $query = "SELECT s.* FROM `staff` AS s WHERE s.`archived` = :a AND s.`role` != 'secretary'";
         return $this->db->run($query, array(":a" => $isArchived))->all();
     }
 

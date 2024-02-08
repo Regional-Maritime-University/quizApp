@@ -52,7 +52,11 @@ $pageTitle = "Login";
                                 <a href="index.html" class="logo d-flex align-items-center w-auto">
                                     <img src="assets/img/rmu-logo.png" alt="">
                                     <span class="d-none d-lg-block">Staff</span>
-                                </a>
+                                </a>           
+                                                       <!-- <?Php  
+                                                   var_dump($_SESSION);
+                                    ?> -->
+
                             </div><!-- End Logo -->
 
                             <div class="card mb-3">
