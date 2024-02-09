@@ -153,7 +153,7 @@ CREATE TABLE IF NOT EXISTS `student` (
   `gender` VARCHAR(1) DEFAULT 'F',
   `dob` DATE NOT NULL,
   `nationality` VARCHAR(25) NOT NULL,
-  `photo` VARCHAR(25),
+  `photo` VARCHAR(255),
   `marital_status` VARCHAR(25),
   `disability` VARCHAR(25),
   `date_admitted` DATE NOT NULL,
@@ -163,8 +163,8 @@ CREATE TABLE IF NOT EXISTS `student` (
   `program` VARCHAR(255) NOT NULL,
   `department` VARCHAR(255) NOT NULL,
   `archived` TINYINT(1) DEFAULT 0,
-  `fk_department` INT NOT NULL,
-  `fk_class` VARCHAR(10) NOT NULL,
+  `fk_department` INT NULL,
+  `fk_class` VARCHAR(10) NULL,
   PRIMARY KEY (`index_number`),
   CONSTRAINT `fk_student_department1` FOREIGN KEY (`fk_department`) REFERENCES `department` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_student_class1` FOREIGN KEY (`fk_class`) REFERENCES `class` (`code`) ON DELETE NO ACTION ON UPDATE NO ACTION
@@ -179,11 +179,10 @@ CREATE INDEX `student_marital_status_idx1` ON `student` (`marital_status`);
 CREATE INDEX `student_disability_idx1` ON `student` (`disability`);
 CREATE INDEX `student_date_admitted_idx1` ON `student` (`date_admitted`);
 CREATE INDEX `student_term_admitted_idx1` ON `student` (`term_admitted`);
-CREATE INDEX `student_academic_year_admitted_idx1` ON `student` (`academic_year_admitted`);
 CREATE INDEX `student_stream_admitted_idx1` ON `student` (`stream_admitted`);
-CREATE INDEX `student_department_idx1` ON `student` (`department`);
+CREATE INDEX `student_academic_year_admitted_idx1` ON `student` (`academic_year_admitted`);
 CREATE INDEX `student_program_idx1` ON `student` (`program`);
-CREATE INDEX `student_class_idx1` ON `student` (`class`);
+CREATE INDEX `student_department_idx1` ON `student` (`department`);
 CREATE INDEX `student_archived_idx1` ON `student` (`archived`);
 
 -- -----------------------------------------------------
