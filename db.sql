@@ -12,8 +12,8 @@ DROP TABLE IF EXISTS `academic_year`;
 CREATE TABLE IF NOT EXISTS `academic_year` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `active` TINYINT(1) DEFAULT 1,
-  `start_month` VARCHAR(15) NOT NULL, 
-  `end_month` VARCHAR(15) NOT NULL,
+  `start_month` ENUM('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec') NOT NULL, 
+  `end_month` ENUM('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec') NOT NULL,
   `start_year` YEAR NOT NULL, 
   `end_year` YEAR NOT NULL,
   `archived` TINYINT(1) DEFAULT 0,
@@ -27,7 +27,8 @@ CREATE INDEX IF NOT EXISTS academic_year_start_year_idx1 ON `academic_year` (`st
 CREATE INDEX IF NOT EXISTS academic_year_end_year_idx1 ON `academic_year` (`end_year`);
 CREATE INDEX IF NOT EXISTS academic_year_archived_idx1 ON `academic_year` (`archived`);
 CREATE INDEX IF NOT EXISTS academic_year_name_idx1 ON `academic_year` (`name`);
-INSERT INTO `academic_year` (`name`, `start_year`, `end_year`) VALUES ('2023 - 2024', '2023', '2024');
+INSERT INTO `academic_year` (`start_month`, `start_year`, `end_month`, `end_year`) 
+VALUES ('Sep', '2023', 'Jun', '2024');
 
 -- -----------------------------------------------------
 -- Table `semester`
@@ -143,18 +144,24 @@ CREATE TABLE IF NOT EXISTS `student` (
   `app_number` VARCHAR(10) NOT NULL UNIQUE,
   `email` VARCHAR(255) NOT NULL UNIQUE,
   `password` VARCHAR(255) NOT NULL,
-  `phone_number` VARCHAR(15) NOT NULL UNIQUE,
+  `phone_number` VARCHAR(15) NOT NULL,
+  `prefix` VARCHAR(10),
   `first_name` VARCHAR(255) NOT NULL,
   `middle_name` VARCHAR(255),
   `last_name` VARCHAR(255) NOT NULL,
-  `prefix` VARCHAR(10),
+  `suffix` VARCHAR(10),
   `gender` VARCHAR(1) DEFAULT 'F',
   `dob` DATE NOT NULL,
   `nationality` VARCHAR(25) NOT NULL,
   `photo` VARCHAR(25),
-  `date_admitted` DATE DEFAULT CURRENT_DATE(),
+  `marital_status` VARCHAR(25),
+  `disability` VARCHAR(25),
+  `date_admitted` DATE NOT NULL,
   `term_admitted` VARCHAR(15) NOT NULL,
   `stream_admitted` VARCHAR(15) NOT NULL,
+  `academic_year_admitted` VARCHAR(15) NOT NULL,
+  `program` VARCHAR(255) NOT NULL,
+  `department` VARCHAR(255) NOT NULL,
   `archived` TINYINT(1) DEFAULT 0,
   `fk_department` INT NOT NULL,
   `fk_class` VARCHAR(10) NOT NULL,
@@ -162,18 +169,22 @@ CREATE TABLE IF NOT EXISTS `student` (
   CONSTRAINT `fk_student_department1` FOREIGN KEY (`fk_department`) REFERENCES `department` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_student_class1` FOREIGN KEY (`fk_class`) REFERENCES `class` (`code`) ON DELETE NO ACTION ON UPDATE NO ACTION
 );
-CREATE INDEX IF NOT EXISTS student_app_number_idx1 ON `student` (`app_number`);
-CREATE INDEX IF NOT EXISTS student_email_idx1 ON `student` (`email`);
-CREATE INDEX IF NOT EXISTS student_phone_number_idx1 ON `student` (`phone_number`);
-CREATE INDEX IF NOT EXISTS student_first_name_idx1 ON `student` (`first_name`);
-CREATE INDEX IF NOT EXISTS student_last_name_idx1 ON `student` (`last_name`);
-CREATE INDEX IF NOT EXISTS student_gender_idx1 ON `student` (`gender`);
-CREATE INDEX IF NOT EXISTS student_dob_idx1 ON `student` (`dob`);
-CREATE INDEX IF NOT EXISTS student_nationality_idx1 ON `student` (`nationality`);
-CREATE INDEX IF NOT EXISTS student_date_admitted_idx1 ON `student` (`date_admitted`);
-CREATE INDEX IF NOT EXISTS student_term_admitted_idx1 ON `student` (`term_admitted`);
-CREATE INDEX IF NOT EXISTS student_stream_admitted_idx1 ON `student` (`stream_admitted`);
-CREATE INDEX IF NOT EXISTS student_archived_idx1 ON `student` (`archived`);
+CREATE INDEX `student_phone_number_idx1` ON `student` (`phone_number`);
+CREATE INDEX `student_first_name_idx1` ON `student` (`first_name`);
+CREATE INDEX `student_last_name_idx1` ON `student` (`last_name`);
+CREATE INDEX `student_gender_idx1` ON `student` (`gender`);
+CREATE INDEX `student_dob_idx1` ON `student` (`dob`);
+CREATE INDEX `student_nationality_idx1` ON `student` (`nationality`);
+CREATE INDEX `student_marital_status_idx1` ON `student` (`marital_status`);
+CREATE INDEX `student_disability_idx1` ON `student` (`disability`);
+CREATE INDEX `student_date_admitted_idx1` ON `student` (`date_admitted`);
+CREATE INDEX `student_term_admitted_idx1` ON `student` (`term_admitted`);
+CREATE INDEX `student_academic_year_admitted_idx1` ON `student` (`academic_year_admitted`);
+CREATE INDEX `student_stream_admitted_idx1` ON `student` (`stream_admitted`);
+CREATE INDEX `student_department_idx1` ON `student` (`department`);
+CREATE INDEX `student_program_idx1` ON `student` (`program`);
+CREATE INDEX `student_class_idx1` ON `student` (`class`);
+CREATE INDEX `student_archived_idx1` ON `student` (`archived`);
 
 -- -----------------------------------------------------
 -- Table `section`
