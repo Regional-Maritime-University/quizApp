@@ -43,28 +43,28 @@
                 </a>
             </li><!-- End Programmes Page Nav -->
 
-      
 
-        <li class="nav-item">
-            <a class="nav-link  <?= $pageTitle === "Students" ? "" : "collapsed" ?>" href="students.php">
-                <i class="bi bi-people"></i>
-                <span>Students</span>
-            </a>
-        </li><!-- End Students Page Nav -->
 
-        <li class="nav-item">
-            <a class="nav-link  <?= $pageTitle === "Classes" ? "" : "collapsed" ?>" href="classes.php">
-                <i class="bi bi-dash-circle"></i>
-                <span>Classes</span>
-            </a>
-        </li><!-- End Classes Page Nav -->
+            <li class="nav-item">
+                <a class="nav-link  <?= $pageTitle === "Students" ? "" : "collapsed" ?>" href="students.php">
+                    <i class="bi bi-people"></i>
+                    <span>Students</span>
+                </a>
+            </li><!-- End Students Page Nav -->
 
-        <li class="nav-item">
-            <a class="nav-link  <?= $pageTitle === "Courses" ? "" : "collapsed" ?>" href="courses.php">
-                <i class="bi bi-collection"></i>
-                <span>Courses</span>
-            </a>
-        </li><!-- End Courses Page Nav -->  <?php } ?>
+            <li class="nav-item">
+                <a class="nav-link  <?= $pageTitle === "Classes" ? "" : "collapsed" ?>" href="classes.php">
+                    <i class="bi bi-dash-circle"></i>
+                    <span>Classes</span>
+                </a>
+            </li><!-- End Classes Page Nav -->
+
+            <li class="nav-item">
+                <a class="nav-link  <?= $pageTitle === "Courses" ? "" : "collapsed" ?>" href="courses.php">
+                    <i class="bi bi-collection"></i>
+                    <span>Courses</span>
+                </a>
+            </li><!-- End Courses Page Nav --> <?php } ?>
 
         <?php if (isset($_SESSION["user"]["role"]) && $_SESSION["user"]["role"] === "lecturer") { ?>
             <li class="nav-item">
@@ -72,12 +72,14 @@
                     <i class="bi bi-person"></i>
                     <span>Quiz</span>
                 </a>
-            </li>   <li class="nav-item">
+            </li>
+            <li class="nav-item">
                 <a class="nav-link  <?= $pageTitle === "Questions" ? "" : "collapsed" ?>" href="questions.php">
                     <i class="bi bi-person"></i>
                     <span>Questions</span>
                 </a>
-            </li>   <li class="nav-item">
+            </li>
+            <li class="nav-item">
                 <a class="nav-link  <?= $pageTitle === "Assesment" ? "" : "collapsed" ?>" href="quizzes.php">
                     <i class="bi bi-person"></i>
                     <span>Assesment</span>

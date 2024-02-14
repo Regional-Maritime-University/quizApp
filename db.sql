@@ -72,6 +72,7 @@ CREATE TABLE IF NOT EXISTS `program` (
   `name` VARCHAR(255) NOT NULL,
   `category` VARCHAR(100) NOT NULL,
   `index_code` VARCHAR(5) NOT NULL,
+  `faculty` varchar(255) DEFAULT NULL,
   `duration` INT DEFAULT 0,
   `dur_format` VARCHAR(25) DEFAULT 'YEAR',
   `num_of_semesters` INT NOT NULL,
@@ -80,13 +81,42 @@ CREATE TABLE IF NOT EXISTS `program` (
   PRIMARY KEY (`code`),
   CONSTRAINT `fk_program_department1` FOREIGN KEY (`fk_department`) REFERENCES `department` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 );
+ALTER TABLE `program` ADD COLUMN `faculty` varchar(255) DEFAULT NULL AFTER `index_code`;
 CREATE INDEX program_name_idx1 ON `program` (`name`);
 CREATE INDEX program_category_idx1 ON `program` (`category`); 
 CREATE INDEX program_index_code_idx1 ON `program` (`index_code`); 
+CREATE INDEX program_faculty_idx1 ON `program` (`faculty`); 
 CREATE INDEX program_duration_idx1 ON `program` (`duration`); 
 CREATE INDEX program_dur_format_idx1 ON `program` (`dur_format`);
 CREATE INDEX program_num_of_semesters_idx1 ON `program` (`num_of_semesters`);
 CREATE INDEX program_archived_idx1 ON `program` (`archived`);
+
+--
+-- Dumping data for table `programs`
+--
+
+INSERT INTO `program` (`code`, `index_code`, `name`, `fk_department`, `category`, `duration`, `dur_format`, `num_of_semesters`) VALUES
+('BNS', 'BNS', 'B.Sc. NAUTICAL SCIENCE', 3, 'DEGREE', 4, 'year', 8),
+('BME', 'BME', 'B.Sc. MARINE ENGINEERING', 2, 'DEGREE', 4, 'year', 8),
+('BMT', 'BMT', 'B.Sc. MECHANICAL ENGINEERING', 2, 'DEGREE', 4, 'year', 8),
+('BCE', 'BCE', 'B.Sc. COMPUTER ENGINEERING', 1, 'DEGREE', 4, 'year', 8),
+('BCS', 'BCS', 'B.Sc. COMPUTER SCIENCE', 1, 'DEGREE', 4, 'year', 8),
+('BEE', 'BEE', 'B.Sc. ELECTRICAL/ELECTRONIC ENGINEERING', 4, 'DEGREE', 4, 'year', 8),
+('BAC', 'BAC', 'B.Sc. ACCOUNTING', 5, 'DEGREE', 4, 'year', 8),
+('BIT', 'BIT', 'B.Sc. INFORMATION TECHNOLOGY', 1, 'DEGREE', 4, 'year', 8),
+('BPS', 'BPS', 'B.Sc. PORT AND SHIPPING ADMINISTRATION', 5, 'DEGREE', 4, 'year', 8),
+('BLG', 'BLG', 'B.Sc. LOGISTICS MANAGEMENT', 5, 'DEGREE', 4, 'year', 8),
+('BTA', 'BTA', 'Diploma IN BANKING TECHNOLOGY AND ACCOUNTING', 5, 'DIPLOMA', 2, 'year', 4),
+('AIT', 'AIT', 'Diploma IN ACCOUNTING WITH INFORMATION TECHNOLOGY', 5, 'DIPLOMA', 2, 'year', 4),
+('DIT', 'DIT', 'Diploma IN INFORMATION TECHNOLOGY', 1, 'DIPLOMA', 2, 'year', 4),
+('MEM', 'MEM', 'MARINE ENGINE MECHANICS', 2, 'SHORT', 6, 'month', 0),
+('CDA', 'CDA', 'CILT, DILT AND ADILT', 5, 'SHORT', 6, 'month', 0),
+('BPO', 'BPO', 'B.Sc. PROCUREMENT AND OPERATIONS MANAGEMENT', 5, 'DEGREE', 4, 'year', 8),
+('DNS', 'DNS', 'Diploma IN NAUTICAL SCIENCE', 3, 'DIPLOMA', 2, 'year', 4),
+('DME', 'DME', 'Diploma IN MARINE ENGINEERING', 2, 'DIPLOMA', 2, 'year', 4),
+('DEE', 'DEE', 'Diploma ELECTRICAL/ELECTRONIC ENGINNERING', 4, 'DIPLOMA', 2, 'year', 4),
+('BNA', 'BNA', 'B.Sc. NAVAL ARCHITECTURE, SMALL CRAFT AND OCEAN ENGINEERING', 3, 'DEGREE', 4, 'year', 8),
+('DPS', 'DPS', 'Diploma IN PORTS AND SHIPPING MANAGEMENT', 5, 'DIPLOMA', 2, 'year', 4);
 
 -- -----------------------------------------------------
 -- Table `course`

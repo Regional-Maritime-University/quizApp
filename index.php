@@ -13,7 +13,7 @@ $pageTitle = "Login";
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-    <title>Dashboard - RMU QuizApp</title>
+    <title>RMU SMS | Login</title>
     <meta content="" name="description">
     <meta content="" name="keywords">
 
@@ -51,12 +51,8 @@ $pageTitle = "Login";
                             <div class="d-flex justify-content-center py-4">
                                 <a href="index.html" class="logo d-flex align-items-center w-auto">
                                     <img src="assets/img/rmu-logo.png" alt="">
-                                    <span class="d-none d-lg-block">Staff</span>
-                                </a>           
-                                                       <!-- <?Php  
-                                                   var_dump($_SESSION);
-                                    ?> -->
-
+                                    <span class="d-none d-lg-block">RMU SMS | Staff</span>
+                                </a>
                             </div><!-- End Logo -->
 
                             <div class="card mb-3">
